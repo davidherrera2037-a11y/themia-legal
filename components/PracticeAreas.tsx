@@ -12,6 +12,7 @@ import { PracticeAreaCard, type PracticeArea } from "./PracticeAreaCard";
 const topRow: PracticeArea[] = [
   {
     title: "DERECHO DE FAMILIA",
+    slug: "familia",
     icon: Users,
     items: [
       "Divorcios y separación de bienes",
@@ -23,6 +24,7 @@ const topRow: PracticeArea[] = [
   },
   {
     title: "DERECHO CIVIL",
+    slug: "civil",
     icon: FileText,
     items: [
       "Contratos (elaboración y revisión)",
@@ -34,6 +36,7 @@ const topRow: PracticeArea[] = [
   },
   {
     title: "DERECHO LABORAL",
+    slug: "laboral",
     icon: Briefcase,
     items: [
       "Despidos injustificados",
@@ -45,6 +48,7 @@ const topRow: PracticeArea[] = [
   },
   {
     title: "DERECHO COMERCIAL Y EMPRESARIAL",
+    slug: "comercial-empresarial",
     icon: TrendingUp,
     items: [
       "Constitución de empresa",
@@ -58,6 +62,7 @@ const topRow: PracticeArea[] = [
 const bottomRow: PracticeArea[] = [
   {
     title: "DERECHO CONSTITUCIONAL",
+    slug: "constitucional",
     icon: Scale,
     items: [
       "Acciones de tutela",
@@ -69,6 +74,7 @@ const bottomRow: PracticeArea[] = [
   },
   {
     title: "DERECHO PENAL",
+    slug: "penal",
     icon: Gavel,
     items: [
       "Asesoría durante denuncias",
@@ -79,6 +85,7 @@ const bottomRow: PracticeArea[] = [
   },
   {
     title: "SERVICIOS JURÍDICOS",
+    slug: "servicios-juridicos",
     icon: ClipboardList,
     items: [
       "Elaboración de contratos",

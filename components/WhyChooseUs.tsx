@@ -11,7 +11,10 @@ const reasons = [
 
 export function WhyChooseUs() {
   return (
-    <div className="reveal relative overflow-hidden rounded-3xl bg-ink px-8 py-10 text-cream sm:px-10">
+    <div
+      id="por-que-elegirnos"
+      className="reveal relative overflow-hidden rounded-3xl bg-ink px-8 py-10 text-cream sm:px-10"
+    >
       <LogoMark
         className="pointer-events-none absolute -bottom-6 -right-6 h-48 w-auto text-cream/[0.06]"
         aria-hidden="true"

@@ -1,3 +1,4 @@
+import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { IntroSection } from "@/components/IntroSection";
 import { PracticeAreas } from "@/components/PracticeAreas";
@@ -10,6 +11,7 @@ export default function LandingPage() {
   return (
     <main className="bg-cream">
       <ScrollReveal />
+      <Header />
       <Hero />
       <IntroSection />
       <PracticeAreas />

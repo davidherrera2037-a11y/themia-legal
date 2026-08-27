@@ -2,13 +2,14 @@ import type { LucideIcon } from "lucide-react";
 
 export type PracticeArea = {
   title: string;
+  slug: string;
   icon: LucideIcon;
   items: string[];
 };
 
-export function PracticeAreaCard({ title, icon: Icon, items }: PracticeArea) {
+export function PracticeAreaCard({ title, slug, icon: Icon, items }: PracticeArea) {
   return (
-    <div className="reveal group">
+    <div id={slug} className="reveal group">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ink text-gold-pale transition-transform duration-300 group-hover:scale-105">
         <Icon className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
       </div>

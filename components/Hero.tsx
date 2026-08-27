@@ -3,7 +3,7 @@ import { LogoMark } from "./Logo";
 
 export function Hero() {
   return (
-    <header className="relative bg-cream">
+    <section id="inicio" className="relative bg-cream">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 pt-14 pb-20 sm:px-10 md:grid-cols-2 md:gap-12 md:pt-20 md:pb-28">
         {/* Left: wordmark + headline */}
         <div className="reveal order-2 md:order-1">
@@ -84,6 +84,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-    </header>
+    </section>
   );
 }

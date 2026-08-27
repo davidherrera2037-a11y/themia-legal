@@ -19,6 +19,11 @@
     scroll-behavior: smooth;
   }
 
+  /* Keeps anchored sections from hiding behind the sticky header */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
   body {
     background-color: var(--color-cream);
     color: var(--color-ink);
