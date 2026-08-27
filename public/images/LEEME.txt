@@ -1,0 +1,12 @@
+Pon aquí tus imágenes reales, con EXACTAMENTE estos nombres:
+
+1. logo.png   → el logotipo de Themia Legal
+2. hero.jpg   → la foto de la estatua de la Justicia con los libros
+
+El sitio ya está listo para usarlas en cuanto aparezcan aquí con esos
+nombres — no hay que tocar ni una línea de código.
+
+Mientras tanto, el sitio se ve bien igual: usa un logo dibujado y un
+fondo de color en su lugar.
+
+Puedes borrar este archivo (LEEME.txt) cuando ya no lo necesites.
