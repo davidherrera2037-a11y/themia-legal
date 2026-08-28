@@ -31,6 +31,7 @@ export function Hero() {
             Derecho con <span className="font-semibold italic">propósito</span>.
             <br />
             Justicia con <span className="font-semibold italic">empatía</span>.
+            Defensa con <span className="font-semibold italic">estrategia</span>.
           </h1>
 
           <p className="mt-6 max-w-md font-display text-lg italic leading-relaxed text-ink/85">
