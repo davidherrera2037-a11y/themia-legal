@@ -62,15 +62,6 @@ export function Hero() {
               strokeWidth={1}
               aria-hidden="true"
             />
-            <div className="absolute inset-x-0 bottom-0 space-y-2 p-6">
-              <p className="font-display text-sm italic text-gold-pale/90">
-                &ldquo;Derecho con propósito.&rdquo;
-              </p>
-              <p className="font-display text-sm italic text-gold-pale/90">
-                &ldquo;Justicia con empatía.&rdquo;
-              </p>
-            </div>
-            {/* Decorative curve echoing the wave motif from the reference design */}
             <svg
               viewBox="0 0 300 60"
               preserveAspectRatio="none"
