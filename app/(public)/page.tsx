@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { IntroSection } from "@/components/IntroSection";
 import { PracticeAreas } from "@/components/PracticeAreas";
+import { RequestForm } from "@/components/RequestForm";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { ScheduleConsult } from "@/components/ScheduleConsult";
 import { Footer } from "@/components/Footer";
@@ -15,6 +16,7 @@ export default function LandingPage() {
       <Hero />
       <IntroSection />
       <PracticeAreas />
+      <RequestForm />
 
       <section className="px-6 pb-8 sm:px-10">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2">
