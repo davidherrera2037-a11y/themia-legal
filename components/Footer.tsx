@@ -29,13 +29,6 @@ export function Footer() {
         <span className="h-px flex-1 bg-gold/40" aria-hidden="true" />
       </div>
 
-      <p className="text-balance mx-auto max-w-2xl font-display text-lg leading-relaxed text-ink sm:text-xl">
-        Con mucho orgullo les presento en qué estamos trabajando en Themia
-        Legal. ⚖️
-        <br />
-        Estos son nuestros servicios y estamos listas para acompañarte 🤎
-      </p>
-
       <div className="mx-auto mt-8 flex max-w-6xl items-center justify-center gap-4">
         {SOCIALS.map(({ label, href, Icon }) => (
           <a
