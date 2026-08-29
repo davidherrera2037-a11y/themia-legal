@@ -6,8 +6,6 @@ import { requireRole } from "@/lib/auth/require-role";
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 
 export async function createClientAction(formData: FormData) {
-  // Vuelve a exigir el rol aquí, del lado del servidor — el formulario
-  // no es la protección real, esto sí lo es.
   await requireRole(["SUPER_ADMIN", "ADMINISTRATIVA", "ABOGADA"]);
 
   const full_name = String(formData.get("full_name") ?? "").trim();
@@ -42,4 +40,28 @@ export async function createClientAction(formData: FormData) {
 
   revalidatePath("/portal/equipo/clientes");
   redirect("/portal/equipo/clientes");
+}
+
+export async function linkClientAccountAction(formData: FormData) {
+  await requireRole(["SUPER_ADMIN", "ADMINISTRATIVA", "ABOGADA"]);
+
+  const client_id = String(formData.get("client_id") ?? "");
+  const user_id = String(formData.get("user_id") ?? "");
+
+  if (!client_id || !user_id) {
+    throw new Error("Falta el cliente o la cuenta a vincular.");
+  }
+
+  const supabase = await createSupabaseClient();
+
+  const { error } = await supabase
+    .from("clients")
+    .update({ user_id })
+    .eq("id", client_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/portal/equipo/clientes");
 }
