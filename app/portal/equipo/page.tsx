@@ -40,6 +40,12 @@ export default async function EquipoPage() {
             >
               Ver clientes
             </Link>
+            <Link
+              href="/portal/equipo/casos"
+              className="rounded-full border border-ink/20 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-cream"
+            >
+              Ver casos
+            </Link>
             <LogoutButton />
           </div>
         </div>
