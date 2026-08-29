@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Lock } from "lucide-react";
 import { LogoMark } from "./Logo";
 
 const PRACTICE_LINKS = [
@@ -125,6 +125,14 @@ export function Header() {
           </a>
 
           <a
+            href="/login"
+            className="flex items-center gap-1.5 text-sm font-medium text-ink/85 transition-colors hover:text-ink"
+          >
+            <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+            Portal privado
+          </a>
+
+          <a
             href="#agenda"
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-deep"
           >
@@ -201,6 +209,15 @@ export function Header() {
               className="border-t border-ink/10 pt-6 font-display text-2xl text-ink"
             >
               ¿Por qué elegirnos?
+            </a>
+
+            <a
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 text-base text-ink/80"
+            >
+              <Lock className="h-4 w-4" aria-hidden="true" />
+              Portal privado
             </a>
 
             <a

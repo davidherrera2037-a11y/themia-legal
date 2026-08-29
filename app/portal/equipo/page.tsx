@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "../LogoutButton";
@@ -32,7 +33,13 @@ export default async function EquipoPage() {
             llegan en las próximas fases.
           </p>
 
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link
+              href="/portal/equipo/clientes"
+              className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-deep"
+            >
+              Ver clientes
+            </Link>
             <LogoutButton />
           </div>
         </div>
