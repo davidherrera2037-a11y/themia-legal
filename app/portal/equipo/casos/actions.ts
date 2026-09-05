@@ -58,6 +58,48 @@ export async function createCaseAction(
   redirect(`/portal/equipo/casos/${data.id}`);
 }
 
+/**
+ * Corrige los datos de un caso ya creado.
+ *
+ * No deja cambiar de clienta ni de estado, y no es un olvido: mover un
+ * caso a otra clienta cambiaría quién puede leerlo desde fuera del
+ * despacho, y el estado tiene su propio control, que además deja rastro
+ * en la línea de tiempo. Esto es para corregir lo que se escribió mal.
+ */
+export async function actualizarCasoAction(
+  _previo: EstadoAccion,
+  formData: FormData,
+): Promise<EstadoAccion> {
+  await requireEquipo();
+
+  const id = texto(formData, "id");
+  const title = texto(formData, "title");
+
+  if (!id) return { error: "Falta el caso." };
+  if (!title) return { error: "El caso necesita un título." };
+  if (title.length > 200) {
+    return { error: "El título es demasiado largo (máximo 200 caracteres)." };
+  }
+
+  const supabase = await createSupabaseClient();
+  const { error } = await supabase
+    .from("cases")
+    .update({
+      title,
+      area: unoDe(texto(formData, "area"), AREAS, "FAMILIA"),
+      case_type: unoDe(texto(formData, "case_type"), TIPOS_CASO, "CONSULTA"),
+      priority: unoDe(texto(formData, "priority"), PRIORIDADES, "MEDIA"),
+      description: texto(formData, "description"),
+      client_objective: texto(formData, "client_objective"),
+    })
+    .eq("id", id);
+
+  if (error) return { error: `No se pudo guardar: ${error.message}` };
+
+  revalidatePath("/portal/equipo", "layout");
+  redirect(`/portal/equipo/casos/${id}`);
+}
+
 export async function cambiarEstadoAction(
   _previo: EstadoAccion,
   formData: FormData,

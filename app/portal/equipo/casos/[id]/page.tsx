@@ -163,6 +163,12 @@ export default async function DetalleCasoPage({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href={`/portal/equipo/casos/${c.id}/editar`}
+              className="rounded-full border border-ink/20 px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-ink hover:text-cream"
+            >
+              Corregir
+            </Link>
             <Badge tono={TONO_PRIORIDAD[c.priority as Prioridad]}>
               {PRIORIDADES[c.priority as Prioridad] ?? c.priority}
             </Badge>

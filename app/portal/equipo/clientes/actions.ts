@@ -57,6 +57,61 @@ export async function createClientAction(
   redirect(`/portal/equipo/clientes/${data.id}`);
 }
 
+/**
+ * Corrige los datos de una clienta.
+ *
+ * Un teléfono mal tecleado o una tilde de más en el nombre no deberían
+ * ser para siempre. No incluye el estado ni la cuenta vinculada: cada uno
+ * tiene su propio control, con sus propios permisos.
+ */
+export async function actualizarClientaAction(
+  _previo: EstadoAccion,
+  formData: FormData,
+): Promise<EstadoAccion> {
+  await requireEquipo();
+
+  const id = texto(formData, "id");
+  const full_name = texto(formData, "full_name");
+  const identification_number = texto(formData, "identification_number");
+
+  if (!id) return { error: "Falta la clienta." };
+  if (!full_name) return { error: "El nombre completo es obligatorio." };
+  if (!identification_number) {
+    return { error: "El número de documento es obligatorio." };
+  }
+
+  const supabase = await createSupabaseClient();
+  const { error } = await supabase
+    .from("clients")
+    .update({
+      full_name,
+      identification_type: unoDe(
+        texto(formData, "identification_type"),
+        TIPOS_DOCUMENTO,
+        "CC",
+      ),
+      identification_number,
+      phone: texto(formData, "phone"),
+      email: texto(formData, "email"),
+      address: texto(formData, "address"),
+      city: texto(formData, "city"),
+    })
+    .eq("id", id);
+
+  if (error) {
+    if (error.code === "23505") {
+      return {
+        error:
+          "Ya existe otra clienta con ese documento. Revisa si es la misma persona duplicada.",
+      };
+    }
+    return { error: `No se pudo guardar: ${error.message}` };
+  }
+
+  revalidatePath("/portal/equipo", "layout");
+  redirect(`/portal/equipo/clientes/${id}`);
+}
+
 export async function linkClientAccountAction(
   _previo: EstadoAccion,
   formData: FormData,
