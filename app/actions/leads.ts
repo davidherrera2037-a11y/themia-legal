@@ -45,6 +45,10 @@ export async function enviarSolicitudAction(
   }
 
   const supabase = await createClient();
+  // Sin `.select()` a propósito, y no es un descuido: quien no ha entrado
+  // no tiene política de lectura sobre `leads` (escribe y se olvida). Un
+  // `.select()` aquí haría que PostgREST pidiera la fila de vuelta, la
+  // lectura sería denegada y el formulario dejaría de guardar.
   const { error } = await supabase.from("leads").insert({
     full_name,
     area,

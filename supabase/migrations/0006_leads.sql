@@ -34,6 +34,7 @@ comment on table public.leads is
   'Solicitudes enviadas desde el formulario público. Nadie sin sesión puede leerlas.';
 
 create index if not exists leads_status_idx on public.leads (status, created_at desc);
+create index if not exists leads_client_idx on public.leads (client_id);
 
 drop trigger if exists tocar_updated_at on public.leads;
 create trigger tocar_updated_at before update on public.leads
@@ -55,14 +56,25 @@ create policy "leads_insert_publico"
     and internal_note is null
   );
 
+-- El `to authenticated` de estas dos no es decorativo. Sin él la política
+-- aplica al rol `public`, que incluye a quien no ha entrado, y entonces
+-- Postgres evalúa `get_my_role()` también para un visitante — al que la
+-- migración 0005 le quitó el permiso sobre esa función. El visitante no
+-- vería las solicitudes de nadie (eso funciona igual), pero recibiría un
+-- error de permisos en vez de nada, y bastaría con que la inserción del
+-- formulario pidiera de vuelta la fila creada para que dejara de guardar.
+-- Es la única tabla que un visitante puede tocar, así que es la única
+-- donde esto importa.
 drop policy if exists "leads_select_staff" on public.leads;
 create policy "leads_select_staff"
   on public.leads for select
+  to authenticated
   using (public.get_my_role() in ('SUPER_ADMIN', 'ADMINISTRATIVA', 'ABOGADA'));
 
 drop policy if exists "leads_update_staff" on public.leads;
 create policy "leads_update_staff"
   on public.leads for update
+  to authenticated
   using (public.get_my_role() in ('SUPER_ADMIN', 'ADMINISTRATIVA', 'ABOGADA'));
 
 -- anon solo recibe insert. Sin select, sin update, sin delete.

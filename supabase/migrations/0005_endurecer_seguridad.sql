@@ -100,6 +100,22 @@ create policy "profiles_select_equipo"
 revoke execute on function public.handle_new_user() from public, anon, authenticated;
 revoke execute on function public.proteger_rol_y_estado() from public, anon, authenticated;
 
+-- Lo mismo para el seguro que ya traía el proyecto: `rls_auto_enable` es
+-- la función del event trigger `ensure_rls`, que activa RLS sola en cada
+-- tabla nueva. Estaba abierta en /rest/v1/rpc/ incluso sin sesión. Un
+-- event trigger tampoco comprueba EXECUTE al dispararse, así que el
+-- seguro sigue funcionando igual. (Si tu proyecto no la tiene, este
+-- bloque no hace nada.)
+do $$
+begin
+  if exists (
+    select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'rls_auto_enable'
+  ) then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
+
 -- get_my_role sí la evalúan las políticas RLS con los permisos de quien
 -- consulta, así que "authenticated" la conserva. A "anon" se le quita:
 -- sin sesión siempre devuelve nulo, no pierde nada.
@@ -164,6 +180,9 @@ comment on table public.profile_audit is
 
 create index if not exists profile_audit_profile_idx
   on public.profile_audit (profile_id, cambiado_en desc);
+
+create index if not exists profile_audit_autor_idx
+  on public.profile_audit (cambiado_por);
 
 create or replace function public.registrar_cambio_de_rol()
 returns trigger

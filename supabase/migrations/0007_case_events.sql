@@ -46,6 +46,9 @@ comment on column public.case_events.visible_para_cliente is
 create index if not exists case_events_case_idx
   on public.case_events (case_id, occurred_at desc);
 
+create index if not exists case_events_author_idx
+  on public.case_events (author_id);
+
 alter table public.case_events enable row level security;
 
 -- El equipo ve y escribe todo.
