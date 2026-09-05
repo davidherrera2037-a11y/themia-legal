@@ -101,19 +101,25 @@ export async function proxy(request: NextRequest) {
   };
 
   // Sin Supabase configurado la web pública sigue funcionando (no depende
-  // de la base), pero el portal no puede existir. Dejarlo pasar en silencio
-  // es lo que hace que un despliegue sin variables se vea igual que uno
-  // bien configurado. La cabecera deja el estado a la vista sin abrir nada:
+  // de la base), pero el portal no puede existir.
+  //
+  // Aquí había un fallo de diseño: se mandaba /login a la portada. Para
+  // quien intentaba entrar, el portal simplemente había dejado de existir
+  // —un rebote sin explicación, imposible de distinguir de una avería—.
+  // Ahora /login se sirve y es la propia pantalla la que dice qué falta;
+  // el resto del portal se manda allí, que es donde está la explicación.
+  //
+  // La cabecera deja además el estado a la vista sin abrir el navegador:
   //   curl -I <url> | grep x-themia-auth
   if (!url || !clave) {
-    const sinAuth = conCSP(NextResponse.next(conCabeceras));
-    sinAuth.headers.set("x-themia-auth", "sin-configurar");
-    if (esPrivada || ruta === "/login") {
+    if (esPrivada) {
       const destino = request.nextUrl.clone();
-      destino.pathname = "/";
+      destino.pathname = "/login";
       destino.search = "";
       return conCSP(NextResponse.redirect(destino));
     }
+    const sinAuth = conCSP(NextResponse.next(conCabeceras));
+    sinAuth.headers.set("x-themia-auth", "sin-configurar");
     return sinAuth;
   }
 

@@ -22,6 +22,21 @@ const MOTIVOS: Record<string, string> = {
     "Tu cuenta está desactivada. Habla con la administradora del despacho.",
 };
 
+/**
+ * ¿Está el portal conectado a su base de datos en este despliegue?
+ *
+ * Las variables se configuran por ambiente en Vercel, así que es normal
+ * que producción las tenga y una vista previa no. Cuando faltan, mostrar
+ * el formulario sería peor que inútil: aceptaría la contraseña y fallaría
+ * sin decir por qué.
+ */
+function portalConfigurado() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
+
 export default async function LoginPage({
   searchParams,
 }: {
@@ -39,6 +54,31 @@ export default async function LoginPage({
           </h1>
           <p className="mt-1 text-center text-sm text-ink/60">Portal privado</p>
 
+          {!portalConfigurado() ? (
+            <div className="mt-6 space-y-3">
+              <p
+                role="alert"
+                className="rounded-xl border border-amber-800/25 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900"
+              >
+                El portal no está conectado a su base de datos en este
+                despliegue, así que no se puede entrar todavía.
+              </p>
+              <p className="text-xs leading-relaxed text-ink/60">
+                Si administras el sitio: faltan las variables{" "}
+                <code className="rounded bg-ink/5 px-1">
+                  NEXT_PUBLIC_SUPABASE_URL
+                </code>{" "}
+                y{" "}
+                <code className="rounded bg-ink/5 px-1">
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY
+                </code>
+                . En Vercel se definen por ambiente, así que hay que
+                marcarlas también para <em>Preview</em>, no solo para
+                producción, y volver a desplegar.
+              </p>
+            </div>
+          ) : (
+          <>
           {aviso && (
             <p
               role="alert"
@@ -49,6 +89,8 @@ export default async function LoginPage({
           )}
 
           <FormularioAcceso volver={volver} />
+          </>
+          )}
         </div>
 
         <p className="mt-6 text-center text-sm text-ink/60">
