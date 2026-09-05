@@ -30,7 +30,7 @@ function resolverUrl(): string {
 export const SITIO = {
   nombre: "Themia Legal",
   nombreLargo: "Themia Legal — Firma de Abogadas",
-  lema: "Derecho con propósito. Justicia con empatía.",
+  lema: "Derecho con propósito. Justicia con empatía. Defensa con estrategia.",
   descripcion:
     "Asesoría jurídica clara, humana y efectiva en Colombia. Familia, civil, laboral, comercial, constitucional y penal. Atención presencial y virtual.",
 

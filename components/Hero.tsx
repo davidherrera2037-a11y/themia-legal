@@ -44,6 +44,12 @@ export function Hero() {
             Justicia con{" "}
             <em className="font-semibold not-italic text-gold-deep">empatía</em>
             .
+            <br />
+            Defensa con{" "}
+            <em className="font-semibold not-italic text-gold-deep">
+              estrategia
+            </em>
+            .
           </h1>
 
           <p className="medida mt-7 font-display text-[length:var(--text-lead)] italic leading-relaxed text-ink/80">

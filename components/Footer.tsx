@@ -34,7 +34,7 @@ export function Footer() {
               </div>
             </div>
             <p className="medida mt-5 font-display text-base italic leading-relaxed text-ink/75">
-              Derecho con propósito. Justicia con empatía.
+              {SITIO.lema}
             </p>
 
             <div className="mt-6 flex items-center gap-3">
