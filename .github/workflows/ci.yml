@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  verificacion:
+    runs-on: ubuntu-latest
+    env:
+      # Valores de relleno: el build necesita que las variables existan,
+      # pero no se conecta a Supabase para compilar.
+      NEXT_PUBLIC_SUPABASE_URL: https://ejemplo.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: clave-de-relleno-para-el-build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+      # Falla solo ante lo grave. Una alerta moderada no debe bloquear un
+      # despliegue, pero sí tiene que verse en el log para decidir a mano.
+      - name: Vulnerabilidades en dependencias
+        run: npm audit --omit=dev --audit-level=high
+      - name: Alertas menores (informativo)
+        if: always()
+        run: npm audit --omit=dev || true

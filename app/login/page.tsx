@@ -1,97 +1,103 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { FormularioAcceso } from "@/components/auth/FormularioAcceso";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+export const metadata: Metadata = {
+  title: "Portal privado | Themia Legal",
+  robots: { index: false, follow: false },
+};
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+/**
+ * Se renderiza en cada petición, no se pregenera.
+ *
+ * Es lo que permite que esta pantalla reciba la política de contenido con
+ * nonce que pone proxy.ts: una página pregenerada no puede llevar un número
+ * distinto en cada visita. Aquí es donde se teclea una contraseña, así que
+ * es justo donde más vale la pena pagar ese precio.
+ */
+export const dynamic = "force-dynamic";
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+const MOTIVOS: Record<string, string> = {
+  inactiva:
+    "Tu cuenta está desactivada. Habla con la administradora del despacho.",
+};
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+/**
+ * ¿Está el portal conectado a su base de datos en este despliegue?
+ *
+ * Las variables se configuran por ambiente en Vercel, así que es normal
+ * que producción las tenga y una vista previa no. Cuando faltan, mostrar
+ * el formulario sería peor que inútil: aceptaría la contraseña y fallaría
+ * sin decir por qué.
+ */
+function portalConfigurado() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
 
-    setLoading(false);
-
-    if (error) {
-      setError("Correo o contraseña incorrectos.");
-      return;
-    }
-
-    router.push("/portal");
-    router.refresh();
-  }
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ volver?: string; motivo?: string }>;
+}) {
+  const { volver, motivo } = await searchParams;
+  const aviso = motivo ? MOTIVOS[motivo] : undefined;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-cream px-6">
-      <div className="w-full max-w-sm rounded-3xl border border-ink/10 bg-cream-soft p-8">
-        <h1 className="text-center font-display text-2xl font-semibold text-ink">
-          Themia Legal
-        </h1>
-        <p className="mt-1 text-center text-sm text-ink/60">Portal privado</p>
+    <main className="flex min-h-screen items-center justify-center bg-cream px-6 py-12">
+      <div className="w-full max-w-sm">
+        <div className="rounded-3xl border border-ink/10 bg-cream-soft p-8">
+          <h1 className="text-center font-display text-2xl font-semibold text-ink">
+            Themia Legal
+          </h1>
+          <p className="mt-1 text-center text-sm text-ink/60">Portal privado</p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-sm font-medium text-ink"
+          {!portalConfigurado() ? (
+            <div className="mt-6 space-y-3">
+              <p
+                role="alert"
+                className="rounded-xl border border-amber-800/25 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900"
+              >
+                El portal no está conectado a su base de datos en este
+                despliegue, así que no se puede entrar todavía.
+              </p>
+              <p className="text-xs leading-relaxed text-ink/60">
+                Si administras el sitio: faltan las variables{" "}
+                <code className="rounded bg-ink/5 px-1">
+                  NEXT_PUBLIC_SUPABASE_URL
+                </code>{" "}
+                y{" "}
+                <code className="rounded bg-ink/5 px-1">
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY
+                </code>
+                . En Vercel se definen por ambiente, así que hay que
+                marcarlas también para <em>Preview</em>, no solo para
+                producción, y volver a desplegar.
+              </p>
+            </div>
+          ) : (
+          <>
+          {aviso && (
+            <p
+              role="alert"
+              className="mt-6 rounded-xl border border-amber-800/25 bg-amber-50 px-4 py-2.5 text-sm text-amber-900"
             >
-              Correo
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-ink/20 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/30"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-medium text-ink"
-            >
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-ink/20 bg-cream px-4 py-2.5 text-ink outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/30"
-            />
-          </div>
-
-          {error && (
-            <p role="alert" className="text-sm text-red-700">
-              {error}
+              {aviso}
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-ink-deep disabled:opacity-60"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
-        </form>
+          <FormularioAcceso volver={volver} />
+          </>
+          )}
+        </div>
+
+        <p className="mt-6 text-center text-sm text-ink/60">
+          <Link href="/" className="hover:text-ink">
+            ← Volver al sitio
+          </Link>
+        </p>
       </div>
     </main>
   );
