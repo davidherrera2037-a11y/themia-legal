@@ -1,0 +1,28 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variables de entorno: llevan las claves del proyecto. Solo se versiona
+# el ejemplo, que no tiene valores reales.
+.env*
+!.env.example
+
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+/coverage
+
+# Volcados de la base: traen los datos de las clientas y las cuentas.
+respaldos/
+*.dump
+*.sql.gz
+
+# Documentos de expedientes: nunca deben subirse al repositorio.
+expedientes/
+datos_locales/

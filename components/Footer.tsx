@@ -1,21 +1,10 @@
 import { LinkedinIcon, InstagramIcon, TiktokIcon } from "./SocialIcons";
+import { SITIO } from "@/lib/sitio";
 
 const SOCIALS = [
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/in/themia-legal-7a1385425/?skipRedirect=true",
-    Icon: LinkedinIcon,
-  },
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/themia_legal?igsh=MWVvdDZ5OHU1NXdsdg%3D%3D&utm_source=qr",
-    Icon: InstagramIcon,
-  },
-  {
-    label: "TikTok",
-    href: "https://www.tiktok.com/@themia_legal?_r=1&_t=ZS-98O8aKg0q8n",
-    Icon: TiktokIcon,
-  },
+  { label: "LinkedIn", href: SITIO.redes.linkedin, Icon: LinkedinIcon },
+  { label: "Instagram", href: SITIO.redes.instagram, Icon: InstagramIcon },
+  { label: "TikTok", href: SITIO.redes.tiktok, Icon: TiktokIcon },
 ];
 
 export function Footer() {
@@ -49,6 +38,17 @@ export function Footer() {
             <Icon className="h-5 w-5" />
           </a>
         ))}
+      </div>
+
+      <div className="mx-auto mt-10 max-w-6xl border-t border-ink/10 pt-6 text-xs text-ink/55">
+        <p>
+          © {new Date().getFullYear()} {SITIO.nombre}. {SITIO.telefono} ·{" "}
+          {SITIO.correo}
+        </p>
+        <p className="mt-1">
+          La información de este sitio es divulgativa y no constituye asesoría
+          jurídica; cada caso requiere estudio particular.
+        </p>
       </div>
     </footer>
   );

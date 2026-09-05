@@ -1,87 +1,141 @@
 import Link from "next/link";
-import { requireRole } from "@/lib/auth/require-role";
+import { requireEquipo } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { Card, Vacio } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
+import { FiltrosCasos } from "./FiltrosCasos";
+import {
+  AREAS,
+  ESTADOS_CASO,
+  PRIORIDADES,
+  TONO_PRIORIDAD,
+  estaAbierto,
+  fechaCorta,
+  type Area,
+  type EstadoCaso,
+  type Prioridad,
+} from "@/lib/db/tipos";
 
-const STATUS_LABELS: Record<string, string> = {
-  LEAD: "Contacto inicial",
-  CONSULTATION: "En consulta",
-  ANALYSIS: "En análisis",
-  ACTIVE: "Activo",
-  WAITING_CLIENT: "Esperando a la clienta",
-  WAITING_AUTHORITY: "Esperando a la autoridad",
-  HEARING_SCHEDULED: "Audiencia programada",
-  IN_PROGRESS: "En trámite",
-  CLOSED: "Cerrado",
-  ARCHIVED: "Archivado",
+type FilaCaso = {
+  id: string;
+  title: string;
+  area: string;
+  status: string;
+  priority: string;
+  updated_at: string;
+  clients: { full_name: string } | null;
 };
 
-export default async function CasosPage() {
-  await requireRole(["SUPER_ADMIN", "ADMINISTRATIVA", "ABOGADA"]);
+type Filtros = {
+  estado?: string;
+  area?: string;
+  prioridad?: string;
+  q?: string;
+  cerrados?: string;
+};
+
+export default async function CasosPage({
+  searchParams,
+}: {
+  searchParams: Promise<Filtros>;
+}) {
+  await requireEquipo();
+  const filtros = await searchParams;
 
   const supabase = await createClient();
-  const { data: cases } = await supabase
+  let consulta = supabase
     .from("cases")
-    .select("id, title, area, status, priority, clients(full_name)")
-    .order("created_at", { ascending: false });
+    .select("id, title, area, status, priority, updated_at, clients(full_name)")
+    .order("updated_at", { ascending: false });
+
+  // Los filtros exactos se hacen en la base: traer todo y descartar en el
+  // servidor funciona con veinte casos y deja de funcionar con dos mil.
+  if (filtros.estado) consulta = consulta.eq("status", filtros.estado);
+  if (filtros.area) consulta = consulta.eq("area", filtros.area);
+  if (filtros.prioridad) consulta = consulta.eq("priority", filtros.prioridad);
+
+  const { data, error } = await consulta;
+  let casos = (data ?? []) as unknown as FilaCaso[];
+
+  // Por defecto no se muestran los cerrados ni los archivados: el listado
+  // es para trabajar, no para consultar el histórico.
+  if (!filtros.cerrados && !filtros.estado) {
+    casos = casos.filter((c) => estaAbierto(c.status));
+  }
+
+  // La búsqueda sí se hace aquí: cruza el título del caso con el nombre de
+  // la clienta, que vienen de dos tablas, y una sola consulta que haga las
+  // dos cosas obligaría a una vista en la base. No compensa todavía.
+  const busqueda = filtros.q?.trim().toLowerCase();
+  if (busqueda) {
+    casos = casos.filter(
+      (c) =>
+        c.title.toLowerCase().includes(busqueda) ||
+        (c.clients?.full_name ?? "").toLowerCase().includes(busqueda),
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-cream px-6 py-16">
-      <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between">
-          <div>
-            <Link
-              href="/portal/equipo"
-              className="text-sm text-ink/60 hover:text-ink"
-            >
-              ← Volver
-            </Link>
-            <h1 className="mt-1 font-display text-2xl font-semibold text-ink">
-              Casos
-            </h1>
-          </div>
-          <Link
-            href="/portal/equipo/casos/nuevo"
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-deep"
-          >
-            + Nuevo caso
-          </Link>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-ink">Casos</h1>
+          <p className="mt-1 text-sm text-ink/60">
+            {casos.length}{" "}
+            {casos.length === 1 ? "caso visible" : "casos visibles"}
+            {!filtros.cerrados && !filtros.estado
+              ? " · cerrados y archivados ocultos"
+              : ""}
+          </p>
         </div>
-
-        <div className="mt-6 rounded-3xl border border-ink/10 bg-cream-soft p-6">
-          {!cases || cases.length === 0 ? (
-            <p className="py-6 text-center text-sm text-ink/60">
-              Todavía no hay casos registrados. Primero necesitas al
-              menos un cliente creado, luego crea el primer caso con el
-              botón de arriba.
-            </p>
-          ) : (
-            <ul className="divide-y divide-ink/10">
-              {cases.map((c) => (
-                <li key={c.id} className="py-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-medium text-ink">{c.title}</p>
-                      <p className="text-xs text-ink/60">
-                        {(c.clients as unknown as { full_name: string } | null)
-                          ?.full_name ?? "(sin cliente)"}{" "}
-                        · {c.area}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-gold-pale px-3 py-1 text-xs font-medium text-ink/70">
-                        {c.priority}
-                      </span>
-                      <span className="rounded-full bg-ink/10 px-3 py-1 text-xs font-medium text-ink/70">
-                        {STATUS_LABELS[c.status] ?? c.status}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ButtonLink href="/portal/equipo/casos/nuevo">+ Nuevo caso</ButtonLink>
       </div>
-    </main>
+
+      <FiltrosCasos />
+
+      <Card className="p-4 sm:p-5">
+        {error ? (
+          <Vacio>
+            No se pudieron cargar los casos. Vuelve a intentarlo en un momento.
+          </Vacio>
+        ) : casos.length === 0 ? (
+          <Vacio>
+            Ningún caso coincide. Prueba a limpiar los filtros, o crea el
+            primero con el botón de arriba.
+          </Vacio>
+        ) : (
+          <ul className="divide-y divide-ink/10">
+            {casos.map((c) => (
+              <li key={c.id}>
+                <Link
+                  href={`/portal/equipo/casos/${c.id}`}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-ink/[0.03]"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium text-ink">
+                      {c.title}
+                    </span>
+                    <span className="block text-xs text-ink/60">
+                      {c.clients?.full_name ?? "(sin clienta)"} ·{" "}
+                      {AREAS[c.area as Area] ?? c.area} · movido{" "}
+                      {fechaCorta(c.updated_at)}
+                    </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <Badge tono={TONO_PRIORIDAD[c.priority as Prioridad]}>
+                      {PRIORIDADES[c.priority as Prioridad] ?? c.priority}
+                    </Badge>
+                    <Badge tono="oro">
+                      {ESTADOS_CASO[c.status as EstadoCaso]?.equipo ?? c.status}
+                    </Badge>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </div>
   );
 }

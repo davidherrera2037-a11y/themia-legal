@@ -1,19 +1,17 @@
 import { MessageCircle, Mail, MapPin } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-
-const WHATSAPP_NUMBER = "573133300599"; // 313 330 0599 with Colombia's country code
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+import { SITIO, WHATSAPP_URL } from "@/lib/sitio";
 
 const contactLines = [
   {
     icon: MessageCircle,
     label: "WhatsApp",
-    value: "313 330 0599",
+    value: SITIO.telefono,
   },
   {
     icon: Mail,
     label: "Correo electrónico",
-    value: "themia.legal@outlook.com",
+    value: SITIO.correo,
   },
   {
     icon: MapPin,
