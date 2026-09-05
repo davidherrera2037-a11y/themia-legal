@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FormularioAcceso } from "@/components/auth/FormularioAcceso";
 
 export const metadata: Metadata = {
-  title: "Portal privado | Themia Legal",
+  // El layout raíz ya añade "| Themia Legal" con su plantilla.
+  title: "Portal privado",
   robots: { index: false, follow: false },
 };
 

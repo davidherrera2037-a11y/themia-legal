@@ -30,6 +30,7 @@ components/
   *.tsx                 Secciones de la web pública.
 lib/
   db/tipos.ts           El vocabulario del dominio: estados, áreas, etiquetas.
+  legal/festivos.ts     Calendario judicial colombiano y cuenta de días hábiles.
   auth/                 Quién eres y qué puedes ver.
   supabase/             Clientes de Supabase (navegador y servidor).
   sitio.ts              Teléfono, correo, redes. Un solo lugar.
@@ -37,6 +38,24 @@ lib/
 supabase/migrations/    La base de datos, paso a paso. Ver su README.
 proxy.ts                Sesión, rutas privadas y política de contenido.
 ```
+
+### El control de términos
+
+Es la pieza que no trae el software genérico. Un término procesal en
+Colombia se cuenta en días hábiles, y eso no es "de lunes a viernes": hay
+18 festivos al año y solo seis caen en fecha fija. Siete los traslada al
+lunes la Ley 51 de 1983 (Ley Emiliani) y cinco dependen de la Pascua.
+
+`lib/legal/festivos.ts` los calcula, no los tiene escritos a mano: una
+tabla de fechas fijas queda obsoleta cada 31 de diciembre. `npm test`
+contrasta el resultado con los calendarios oficiales de varios años,
+incluido 2025, que tuvo 17 festivos y no 18 porque San Pedro trasladado
+cayó el mismo día que el Sagrado Corazón.
+
+Al registrar un plazo se guardan las dos cosas: la fecha ya calculada
+—para poder ordenar y filtrar sin hacer cuentas— y de dónde salió (desde
+qué día y cuántos hábiles), para que en pantalla se pueda explicar por qué
+vence ese día y no otro.
 
 ### Las dos capas de seguridad
 
@@ -62,6 +81,10 @@ Si añades una pantalla nueva, la pregunta importante no es "¿puse
 | `ADMINISTRATIVA` | Clientas, casos, solicitudes; vincular cuentas de acceso |
 | `ABOGADA` | Clientas, casos, solicitudes y actuaciones |
 | `CLIENTE` | Solo sus propios asuntos, y solo lo que se marcó como visible |
+
+Los plazos siguen la misma regla que las actuaciones: nacen privados y se
+comparten uno a uno. Una audiencia suele interesarle a la clienta; el
+término para contestar un traslado, casi nunca.
 
 Nadie puede cambiarse su propio rol, ni siquiera llamando a la API a mano: lo
 impide un trigger en la base (`proteger_rol_y_estado`). La primera
@@ -114,6 +137,7 @@ curl -I https://tu-sitio.com | grep x-themia-auth
 ```bash
 npm install
 npm run dev        # http://localhost:3000
+npm test           # pruebas del calendario judicial
 npm run typecheck  # lo mismo que revisa CI
 npm run build
 ```

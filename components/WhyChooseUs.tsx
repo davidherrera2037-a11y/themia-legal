@@ -42,10 +42,7 @@ export function WhyChooseUs() {
       id="por-que-elegirnos"
       className="relative overflow-hidden bg-ink-deep px-6 py-20 text-cream sm:px-10 sm:py-28"
     >
-      <LogoMark
-        className="pointer-events-none absolute -right-16 -top-10 h-[28rem] w-auto text-cream/[0.035]"
-        aria-hidden="true"
-      />
+      <LogoMark className="pointer-events-none absolute -right-16 -top-10 h-[28rem] text-cream/[0.04]" />
 
       <div className="relative mx-auto max-w-6xl">
         <div className="reveal">

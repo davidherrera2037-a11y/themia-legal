@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardTitle, Vacio } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LineaTiempo, type Evento } from "@/components/portal/LineaTiempo";
+import { FilaPlazo, type Plazo } from "@/components/portal/Plazo";
 import {
   AREAS,
   ESTADOS_CASO,
@@ -35,13 +36,26 @@ export default async function DetalleAsuntoPage({
 
   if (!caso) notFound();
 
-  // La política `case_events_select_own` deja pasar únicamente lo marcado
-  // como visible. Lo interno no llega hasta aquí.
-  const { data: eventos } = await supabase
-    .from("case_events")
-    .select("id, kind, title, detail, occurred_at, author_name, visible_para_cliente")
-    .eq("case_id", id)
-    .order("occurred_at", { ascending: false });
+  // Las políticas `case_events_select_own` y `deadlines_select_own` dejan
+  // pasar únicamente lo marcado como visible. Lo interno no llega hasta
+  // aquí: el recorte lo hace la base, no esta pantalla.
+  const [{ data: eventos }, { data: plazos }] = await Promise.all([
+    supabase
+      .from("case_events")
+      .select("id, kind, title, detail, occurred_at, author_name, visible_para_cliente")
+      .eq("case_id", id)
+      .order("occurred_at", { ascending: false }),
+    supabase
+      .from("deadlines")
+      .select(
+        "id, case_id, title, kind, due_date, base_date, business_days, status, notes, visible_para_cliente",
+      )
+      .eq("case_id", id)
+      .eq("status", "PENDIENTE")
+      .order("due_date", { ascending: true }),
+  ]);
+
+  const listaPlazos = (plazos ?? []) as Plazo[];
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -78,6 +92,21 @@ export default async function DetalleAsuntoPage({
           <p className="mt-3 text-xs text-ink/50">
             Si esto ya no refleja lo que necesitas, dínoslo y lo ajustamos.
           </p>
+        </Card>
+      )}
+
+      {listaPlazos.length > 0 && (
+        <Card>
+          <CardTitle>Fechas por delante</CardTitle>
+          <p className="mt-1 text-sm leading-relaxed text-ink/70">
+            Lo que viene en tu caso. Si alguna te pilla mal, avísanos con
+            tiempo y lo miramos.
+          </p>
+          <ul className="mt-4 divide-y divide-ink/10">
+            {listaPlazos.map((pl) => (
+              <FilaPlazo key={pl.id} plazo={pl} />
+            ))}
+          </ul>
         </Card>
       )}
 

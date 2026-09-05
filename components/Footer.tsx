@@ -25,7 +25,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-3">
-              <LogoMark className="h-11 w-auto text-gold" />
+              <LogoMark className="h-11 text-gold" />
               <div>
                 <p className="font-display text-lg font-semibold tracking-[0.06em] text-ink">
                   THEMIA LEGAL
@@ -34,7 +34,7 @@ export function Footer() {
               </div>
             </div>
             <p className="medida mt-5 font-display text-base italic leading-relaxed text-ink/75">
-              Derecho con propósito. Justicia con empatía.
+              {SITIO.lema}
             </p>
 
             <div className="mt-6 flex items-center gap-3">

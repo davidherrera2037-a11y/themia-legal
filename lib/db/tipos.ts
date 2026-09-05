@@ -167,6 +167,63 @@ export const TIPOS_EVENTO = {
 
 export type TipoEvento = keyof typeof TIPOS_EVENTO;
 
+// ------------------------------------------------------------------ plazos
+
+export const TIPOS_PLAZO = {
+  TERMINO: "Término procesal",
+  AUDIENCIA: "Audiencia",
+  REUNION: "Reunión",
+  PAGO: "Pago",
+  OTRO: "Otro",
+} as const;
+
+export type TipoPlazo = keyof typeof TIPOS_PLAZO;
+
+export const ESTADOS_PLAZO = {
+  PENDIENTE: "Pendiente",
+  CUMPLIDO: "Cumplido",
+  CANCELADO: "Cancelado",
+} as const;
+
+export type EstadoPlazo = keyof typeof ESTADOS_PLAZO;
+
+/**
+ * Cómo de urgente es un plazo, según los días hábiles que le quedan.
+ *
+ * Los cortes están en días hábiles y no naturales a propósito: "vence en
+ * 3 días" un viernes por la tarde significa el miércoles, no el lunes. El
+ * semáforo tiene que contar como cuenta el juzgado.
+ */
+export type Urgencia = "vencido" | "hoy" | "inminente" | "proximo" | "holgado";
+
+export function urgenciaDe(diasHabiles: number): Urgencia {
+  if (diasHabiles < 0) return "vencido";
+  if (diasHabiles === 0) return "hoy";
+  if (diasHabiles <= 2) return "inminente";
+  if (diasHabiles <= 5) return "proximo";
+  return "holgado";
+}
+
+export const TONO_URGENCIA: Record<
+  Urgencia,
+  "alerta" | "aviso" | "oro" | "neutro"
+> = {
+  vencido: "alerta",
+  hoy: "alerta",
+  inminente: "aviso",
+  proximo: "oro",
+  holgado: "neutro",
+};
+
+/** Cómo se lee la cuenta atrás en pantalla. */
+export function textoUrgencia(diasHabiles: number): string {
+  if (diasHabiles === 0) return "Vence hoy";
+  if (diasHabiles === 1) return "Vence mañana hábil";
+  if (diasHabiles === -1) return "Venció hace 1 día hábil";
+  if (diasHabiles < 0) return `Venció hace ${-diasHabiles} días hábiles`;
+  return `Quedan ${diasHabiles} días hábiles`;
+}
+
 // -------------------------------------------------------------- clientas
 
 export const TIPOS_DOCUMENTO = {

@@ -1,5 +1,18 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { LogoMark } from "./Logo";
 import { SITIO } from "@/lib/sitio";
+
+/**
+ * La fotografía del arco, si ya está puesta.
+ *
+ * Mientras no exista el archivo, el arco enseña el símbolo de la firma
+ * sobre su burdeos. En cuanto se deja la foto en public/images/portada.jpg
+ * el encabezado la usa sin tocar una línea de código: se comprueba al
+ * compilar, así que no cuesta nada en cada visita.
+ */
+const RUTA_FOTO = "/images/portada.jpg";
+const hayFoto = existsSync(join(process.cwd(), "public", RUTA_FOTO));
 
 /**
  * Encabezado del sitio.
@@ -21,7 +34,7 @@ export function Hero() {
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-20 pt-12 sm:px-10 md:grid-cols-[1.05fr_0.95fr] md:pb-28 md:pt-20">
         <div className="reveal order-2 md:order-1">
           <div className="flex items-center gap-4">
-            <LogoMark className="h-14 w-auto text-gold sm:h-16" />
+            <LogoMark className="h-14 text-gold sm:h-16" />
             <div>
               <p className="font-display text-2xl font-semibold tracking-[0.06em] text-ink sm:text-3xl">
                 THEMIA LEGAL
@@ -43,6 +56,12 @@ export function Hero() {
             <br />
             Justicia con{" "}
             <em className="font-semibold not-italic text-gold-deep">empatía</em>
+            .
+            <br />
+            Defensa con{" "}
+            <em className="font-semibold not-italic text-gold-deep">
+              estrategia
+            </em>
             .
           </h1>
 
@@ -90,55 +109,59 @@ export function Hero() {
               aria-hidden="true"
             />
 
-            {/*
-              El logotipo real, sin recortar.
-
-              public/images/hero.jpg es el lockup completo en apaisado
-              (1050×600). Como fondo recortado a un arco vertical partía
-              la palabra a media letra; ampliarlo hasta evitarlo lo dejaba
-              borroso. Aquí va contenido, entero y a su proporción, sobre
-              el mismo burdeos del archivo —muestreado, no aproximado—,
-              así que no se ve dónde acaba la imagen y empieza el marco.
-
-              Cuando haya una fotografía del despacho, se cambia el <img>
-              por un div con `background-image: cover` y el arco, el marco
-              y el pie siguen sirviendo igual.
-            */}
-            <div
-              className="arco relative flex aspect-[4/5] w-full flex-col items-center justify-center gap-8 overflow-hidden px-6 py-10 shadow-[var(--shadow-alzada)]"
-              // Fondo plano, no degradado: es exactamente el burdeos del
-              // archivo, así que el rectángulo de la imagen desaparece
-              // dentro del arco. La profundidad la pone el viñeteado de
-              // abajo, que va por encima de las dos capas y por tanto no
-              // reabre esa costura.
-              style={{ backgroundColor: "var(--color-vino)" }}
-            >
-              <img
-                src="/images/hero.jpg"
-                alt="Logotipo de Themia Legal: la figura de la justicia sosteniendo la balanza"
-                width={1050}
-                height={600}
-                className="w-[94%] max-w-md"
-              />
-
-              <div className="relative z-10 flex flex-col items-center">
-                <span className="h-px w-16 bg-gold/70" aria-hidden="true" />
-                <p className="mt-5 text-center font-display text-sm italic leading-relaxed text-gold-pale/90 sm:text-base">
-                  “Te escuchamos primero.
-                  <br />
-                  La estrategia viene después.”
-                </p>
-              </div>
-
+            {hayFoto ? (
               <div
-                className="pointer-events-none absolute inset-0"
+                className="arco relative aspect-[4/5] w-full overflow-hidden bg-cover bg-center shadow-[var(--shadow-alzada)]"
                 style={{
-                  background:
-                    "radial-gradient(105% 75% at 50% 32%, rgba(0,0,0,0) 35%, rgba(58,16,24,0.55) 78%, rgba(34,26,22,0.85) 100%)",
+                  backgroundImage: `linear-gradient(170deg, rgba(34,26,22,0.05) 0%, rgba(34,26,22,0.35) 62%, rgba(34,26,22,0.82) 100%), url('${RUTA_FOTO}')`,
+                  backgroundColor: "var(--color-vino)",
                 }}
-                aria-hidden="true"
-              />
-            </div>
+                role="img"
+                aria-label="La figura de la justicia junto a los libros del despacho: derecho con propósito, justicia con empatía, defensa con estrategia"
+              >
+                <div className="absolute inset-x-0 bottom-0 p-7 sm:p-8">
+                  <span
+                    className="mb-4 block h-px w-12 bg-gold"
+                    aria-hidden="true"
+                  />
+                  <p className="font-display text-base italic leading-relaxed text-gold-pale/95 sm:text-lg">
+                    “Escuchamos antes
+                    <br />
+                    de aconsejar.”
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /*
+                Todavía sin fotografía: el arco muestra el símbolo de la
+                firma sobre el burdeos exacto de su logotipo, muestreado del
+                archivo original para que no se vea la costura.
+              */
+              <div
+                className="arco relative flex aspect-[4/5] w-full flex-col items-center justify-center gap-9 overflow-hidden px-8 py-10 shadow-[var(--shadow-alzada)]"
+                style={{ backgroundColor: "var(--color-vino)" }}
+              >
+                <LogoMark className="relative z-10 h-44 text-gold-pale sm:h-52" />
+
+                <div className="relative z-10 flex flex-col items-center">
+                  <span className="h-px w-16 bg-gold/70" aria-hidden="true" />
+                  <p className="mt-5 text-center font-display text-sm italic leading-relaxed text-gold-pale/90 sm:text-base">
+                    “Escuchamos antes
+                    <br />
+                    de aconsejar.”
+                  </p>
+                </div>
+
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background:
+                      "radial-gradient(105% 75% at 50% 32%, rgba(0,0,0,0) 35%, rgba(58,16,24,0.55) 78%, rgba(34,26,22,0.85) 100%)",
+                  }}
+                  aria-hidden="true"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

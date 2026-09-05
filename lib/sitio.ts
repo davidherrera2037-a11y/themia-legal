@@ -7,19 +7,34 @@
  * (ver el JSON-LD de la página principal) y así no pueden contradecirse.
  */
 
-const URL_POR_DEFECTO = "https://themialegal.com";
+/**
+ * Dónde vive el sitio, por orden de preferencia.
+ *
+ * 1. NEXT_PUBLIC_SITE_URL, cuando se configura a mano (el dominio propio).
+ * 2. El dominio de producción que Vercel expone solo. Sin esto, un
+ *    despliegue sin configurar declaraba como canónica una dirección
+ *    distinta de la suya, que es la forma más rápida de que un buscador
+ *    deje de indexar el sitio.
+ * 3. El dominio actual de Vercel, como último recurso.
+ */
+function resolverUrl(): string {
+  const manual = process.env.NEXT_PUBLIC_SITE_URL;
+  if (manual) return manual.replace(/\/$/, "");
+
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (vercel) return `https://${vercel.replace(/\/$/, "")}`;
+
+  return "https://themia-legal.vercel.app";
+}
 
 export const SITIO = {
   nombre: "Themia Legal",
   nombreLargo: "Themia Legal — Firma de Abogadas",
-  lema: "Derecho con propósito. Justicia con empatía.",
+  lema: "Derecho con propósito. Justicia con empatía. Defensa con estrategia.",
   descripcion:
     "Asesoría jurídica clara, humana y efectiva en Colombia. Familia, civil, laboral, comercial, constitucional y penal. Atención presencial y virtual.",
 
-  // NEXT_PUBLIC_SITE_URL se define en Vercel. Sin ella, las etiquetas de
-  // redes sociales apuntarían a rutas relativas y no mostrarían nada al
-  // compartir el enlace.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? URL_POR_DEFECTO).replace(/\/$/, ""),
+  url: resolverUrl(),
 
   telefono: "313 330 0599",
   /** El mismo número en el formato que exige el enlace de WhatsApp. */

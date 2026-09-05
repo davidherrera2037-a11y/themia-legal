@@ -5,13 +5,15 @@ import { ROLES } from "@/lib/db/tipos";
 import { PortalNav, type Enlace } from "./PortalNav";
 
 export const metadata: Metadata = {
-  title: "Portal privado | Themia Legal",
+  // El layout raíz ya añade "| Themia Legal" con su plantilla.
+  title: "Portal privado",
   // El portal no tiene nada que hacer en un buscador.
   robots: { index: false, follow: false },
 };
 
 const EQUIPO: Enlace[] = [
   { href: "/portal/equipo", label: "Tablero" },
+  { href: "/portal/equipo/plazos", label: "Vencimientos" },
   { href: "/portal/equipo/solicitudes", label: "Solicitudes" },
   { href: "/portal/equipo/casos", label: "Casos" },
   { href: "/portal/equipo/clientes", label: "Clientas" },
