@@ -6,6 +6,7 @@ import { Card, CardTitle, Vacio } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LineaTiempo, type Evento } from "@/components/portal/LineaTiempo";
 import { FilaPlazo, type Plazo } from "@/components/portal/Plazo";
+import { ListaDocumentos, type Documento } from "@/components/portal/Documentos";
 import {
   AREAS,
   ESTADOS_CASO,
@@ -39,7 +40,7 @@ export default async function DetalleAsuntoPage({
   // Las políticas `case_events_select_own` y `deadlines_select_own` dejan
   // pasar únicamente lo marcado como visible. Lo interno no llega hasta
   // aquí: el recorte lo hace la base, no esta pantalla.
-  const [{ data: eventos }, { data: plazos }] = await Promise.all([
+  const [{ data: eventos }, { data: plazos }, { data: documentos }] = await Promise.all([
     supabase
       .from("case_events")
       .select("id, kind, title, detail, occurred_at, author_name, visible_para_cliente")
@@ -53,9 +54,17 @@ export default async function DetalleAsuntoPage({
       .eq("case_id", id)
       .eq("status", "PENDIENTE")
       .order("due_date", { ascending: true }),
+    supabase
+      .from("case_documents")
+      .select(
+        "id, file_name, mime_type, size_bytes, kind, description, visible_para_cliente, uploaded_by_name, created_at",
+      )
+      .eq("case_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   const listaPlazos = (plazos ?? []) as Plazo[];
+  const listaDocs = (documentos ?? []) as Documento[];
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -107,6 +116,19 @@ export default async function DetalleAsuntoPage({
               <FilaPlazo key={pl.id} plazo={pl} />
             ))}
           </ul>
+        </Card>
+      )}
+
+      {listaDocs.length > 0 && (
+        <Card>
+          <CardTitle>Tus documentos</CardTitle>
+          <p className="mt-1 text-sm leading-relaxed text-ink/70">
+            Lo que hemos compartido contigo de este caso. Puedes descargarlo
+            cuando quieras.
+          </p>
+          <div className="mt-4">
+            <ListaDocumentos documentos={listaDocs} />
+          </div>
         </Card>
       )}
 

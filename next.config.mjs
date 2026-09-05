@@ -44,6 +44,16 @@ const CABECERAS = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      // Los documentos del expediente se suben por una acción de
+      // servidor, y el tope por defecto de Next es 1 MB: no admite ni una
+      // demanda escaneada. Se sube a 20 MB, el mismo tope que tiene el
+      // bucket, para que el archivo no se rechace en dos sitios distintos
+      // con dos mensajes distintos.
+      bodySizeLimit: "20mb",
+    },
+  },
   // No anunciar el framework: no cierra ningún agujero, pero le ahorra al
   // atacante saber contra qué está.
   poweredByHeader: false,
