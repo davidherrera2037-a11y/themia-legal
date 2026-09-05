@@ -14,6 +14,7 @@ el contenido completo → Run.
 | `0006_leads.sql` | Solicitudes del formulario público |
 | `0007_case_events.sql` | Línea de tiempo del expediente |
 | `0008_plazos.sql` | Plazos, términos judiciales y audiencias |
+| `0009_documentos.sql` | Documentos del expediente (bucket privado + metadatos) |
 
 Todas están escritas para poder correrse dos veces sin romper nada
 (`create ... if not exists`, `drop policy if exists`). Si tienes dudas de

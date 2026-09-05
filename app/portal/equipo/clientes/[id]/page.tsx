@@ -100,6 +100,12 @@ export default async function DetalleClientaPage({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href={`/portal/equipo/clientes/${clienta.id}/editar`}
+              className="rounded-full border border-ink/20 px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-ink hover:text-cream"
+            >
+              Corregir
+            </Link>
             {clienta.user_id ? (
               <Badge tono="exito">Con acceso al portal</Badge>
             ) : (

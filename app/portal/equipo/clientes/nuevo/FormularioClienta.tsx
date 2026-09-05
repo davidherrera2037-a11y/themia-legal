@@ -5,18 +5,41 @@ import { ErrorMsg, Input, Select } from "@/components/ui/Field";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { SIN_ESTADO } from "@/lib/acciones/tipos";
 import { TIPOS_DOCUMENTO, opciones } from "@/lib/db/tipos";
-import { createClientAction } from "../actions";
+import { actualizarClientaAction, createClientAction } from "../actions";
 
+export type ValoresClienta = {
+  id?: string;
+  full_name?: string;
+  identification_type?: string;
+  identification_number?: string;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  city?: string | null;
+};
+
+/**
+ * El mismo formulario para crear y para corregir.
+ *
+ * Al crear puede llegar medio relleno desde una solicitud del sitio; al
+ * corregir llega con `id` y cambia la acción. No incluye el estado ni la
+ * cuenta vinculada: cada uno tiene su propio control y sus permisos.
+ */
 export function FormularioClienta({
   valoresIniciales,
 }: {
-  valoresIniciales?: { full_name?: string; phone?: string; email?: string };
+  valoresIniciales?: ValoresClienta;
 }) {
-  const [estado, accion] = useActionState(createClientAction, SIN_ESTADO);
+  const editando = Boolean(valoresIniciales?.id);
+  const [estado, accion] = useActionState(
+    editando ? actualizarClientaAction : createClientAction,
+    SIN_ESTADO,
+  );
 
   return (
     <form action={accion} className="mt-6 space-y-4">
       <ErrorMsg>{estado.error}</ErrorMsg>
+      {editando && <input type="hidden" name="id" value={valoresIniciales?.id} />}
 
       <Input
         name="full_name"
@@ -30,7 +53,7 @@ export function FormularioClienta({
         <Select
           name="identification_type"
           label="Tipo de documento"
-          defaultValue="CC"
+          defaultValue={valoresIniciales?.identification_type ?? "CC"}
           opciones={opciones(TIPOS_DOCUMENTO)}
         />
         <Input
@@ -39,6 +62,7 @@ export function FormularioClienta({
           required
           inputMode="numeric"
           maxLength={40}
+          defaultValue={valoresIniciales?.identification_number}
         />
       </div>
 
@@ -48,22 +72,32 @@ export function FormularioClienta({
           label="Teléfono"
           type="tel"
           maxLength={40}
-          defaultValue={valoresIniciales?.phone}
+          defaultValue={valoresIniciales?.phone ?? ""}
         />
         <Input
           name="email"
           label="Correo"
           type="email"
           maxLength={160}
-          defaultValue={valoresIniciales?.email}
+          defaultValue={valoresIniciales?.email ?? ""}
         />
       </div>
 
-      <Input name="address" label="Dirección" maxLength={200} />
-      <Input name="city" label="Ciudad" maxLength={80} />
+      <Input
+        name="address"
+        label="Dirección"
+        maxLength={200}
+        defaultValue={valoresIniciales?.address ?? ""}
+      />
+      <Input
+        name="city"
+        label="Ciudad"
+        maxLength={80}
+        defaultValue={valoresIniciales?.city ?? ""}
+      />
 
       <SubmitButton className="w-full" pendiente="Guardando...">
-        Guardar clienta
+        {editando ? "Guardar cambios" : "Guardar clienta"}
       </SubmitButton>
     </form>
   );

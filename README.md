@@ -57,6 +57,19 @@ Al registrar un plazo se guardan las dos cosas: la fecha ya calculada
 qué día y cuántos hábiles), para que en pantalla se pueda explicar por qué
 vence ese día y no otro.
 
+### Los documentos
+
+Los archivos viven en un bucket **privado** de Supabase Storage y sus
+datos en `case_documents`. Están separados a propósito: Storage guarda
+bytes y no entiende de casos ni de quién puede ver qué, así que la
+visibilidad vive en la tabla y las políticas del bucket la consultan.
+
+Que el bucket sea privado significa que no hay dirección permanente: cada
+descarga pide un enlace firmado que caduca al minuto y que solo se firma
+si quien lo pide tiene derecho a ese archivo. Un enlace reenviado por
+WhatsApp deja de servir enseguida — que es justo lo que se quiere con el
+poder escaneado de una clienta.
+
 ### Las dos capas de seguridad
 
 Conviene tener claro esto antes de tocar nada:
@@ -82,8 +95,8 @@ Si añades una pantalla nueva, la pregunta importante no es "¿puse
 | `ABOGADA` | Clientas, casos, solicitudes y actuaciones |
 | `CLIENTE` | Solo sus propios asuntos, y solo lo que se marcó como visible |
 
-Los plazos siguen la misma regla que las actuaciones: nacen privados y se
-comparten uno a uno. Una audiencia suele interesarle a la clienta; el
+Los plazos y los documentos siguen la misma regla que las actuaciones:
+nacen privados y se comparten uno a uno. Una audiencia suele interesarle a la clienta; el
 término para contestar un traslado, casi nunca.
 
 Nadie puede cambiarse su propio rol, ni siquiera llamando a la API a mano: lo

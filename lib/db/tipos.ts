@@ -224,6 +224,53 @@ export function textoUrgencia(diasHabiles: number): string {
   return `Quedan ${diasHabiles} días hábiles`;
 }
 
+// -------------------------------------------------------------- documentos
+
+export const TIPOS_DOCUMENTO_CASO = {
+  DEMANDA: "Demanda",
+  CONTESTACION: "Contestación",
+  PODER: "Poder",
+  PRUEBA: "Prueba",
+  PROVIDENCIA: "Providencia o auto",
+  CONTRATO: "Contrato",
+  IDENTIFICACION: "Identificación",
+  OTRO: "Otro",
+} as const;
+
+export type TipoDocumentoCaso = keyof typeof TIPOS_DOCUMENTO_CASO;
+
+/** Tope de subida. El mismo que tiene el bucket, para no rechazar dos veces. */
+export const TAMANO_MAXIMO = 20 * 1024 * 1024;
+
+/**
+ * Formatos admitidos, con su extensión visible.
+ *
+ * La lista es la misma que la del bucket. Está duplicada a propósito: la
+ * de la base es la que manda, y esta solo sirve para dar un mensaje claro
+ * antes de gastar la subida.
+ */
+export const FORMATOS_ADMITIDOS: Record<string, string> = {
+  "application/pdf": "PDF",
+  "image/jpeg": "JPG",
+  "image/png": "PNG",
+  "image/webp": "WEBP",
+  "image/heic": "HEIC",
+  "application/msword": "DOC",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
+  "application/vnd.ms-excel": "XLS",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
+  "text/plain": "TXT",
+};
+
+/** "1,4 MB" — para que el tamaño se lea, no se calcule. */
+export function pesoLegible(bytes: number | null | undefined): string {
+  if (!bytes || bytes < 0) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(0)} KB`;
+  return `${(kb / 1024).toFixed(1).replace(".", ",")} MB`;
+}
+
 // -------------------------------------------------------------- clientas
 
 export const TIPOS_DOCUMENTO = {

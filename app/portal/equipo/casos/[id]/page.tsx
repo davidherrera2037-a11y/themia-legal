@@ -6,6 +6,11 @@ import { Card, CardTitle, Vacio } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LineaTiempo, type Evento } from "@/components/portal/LineaTiempo";
 import { FilaPlazo, diasQueFaltan, type Plazo } from "@/components/portal/Plazo";
+import {
+  ListaDocumentos,
+  SubirDocumento,
+  type Documento,
+} from "@/components/portal/Documentos";
 import { NuevoPlazo } from "./NuevoPlazo";
 import { CerrarPlazo } from "./CerrarPlazo";
 import { aISO, hoyEnColombia } from "@/lib/legal/festivos";
@@ -82,7 +87,8 @@ export default async function DetalleCasoPage({
   if (!caso) notFound();
   const c = caso as unknown as Caso;
 
-  const [{ data: eventos }, { data: abogadas }, { data: plazos }] = await Promise.all([
+  const [{ data: eventos }, { data: abogadas }, { data: plazos }, { data: documentos }] =
+    await Promise.all([
     supabase
       .from("case_events")
       .select("id, kind, title, detail, occurred_at, author_name, visible_para_cliente")
@@ -104,6 +110,13 @@ export default async function DetalleCasoPage({
       // que hay que mirarlo, no el orden en que se apuntó.
       .order("status", { ascending: true })
       .order("due_date", { ascending: true }),
+    supabase
+      .from("case_documents")
+      .select(
+        "id, file_name, mime_type, size_bytes, kind, description, visible_para_cliente, uploaded_by_name, created_at",
+      )
+      .eq("case_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   // responsible_lawyer_id apunta a auth.users, no a profiles, así que
@@ -114,6 +127,7 @@ export default async function DetalleCasoPage({
   );
 
   const listaPlazos = (plazos ?? []) as Plazo[];
+  const listaDocs = (documentos ?? []) as Documento[];
   const pendientes = listaPlazos.filter((pl) => pl.status === "PENDIENTE");
   // El más urgente de los pendientes, para avisarlo arriba del todo.
   const masUrgente = pendientes[0];
@@ -149,6 +163,12 @@ export default async function DetalleCasoPage({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href={`/portal/equipo/casos/${c.id}/editar`}
+              className="rounded-full border border-ink/20 px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-ink hover:text-cream"
+            >
+              Corregir
+            </Link>
             <Badge tono={TONO_PRIORIDAD[c.priority as Prioridad]}>
               {PRIORIDADES[c.priority as Prioridad] ?? c.priority}
             </Badge>
@@ -238,6 +258,28 @@ export default async function DetalleCasoPage({
                 </span>
               </summary>
               <NuevoPlazo casoId={c.id} hoy={aISO(hoyEnColombia())} />
+            </details>
+          </Card>
+
+          <Card>
+            <CardTitle hint={`${listaDocs.length}`}>Documentos</CardTitle>
+            <p className="mt-1 text-xs text-ink/55">
+              Guardados en un depósito privado: cada descarga usa un enlace
+              que caduca al minuto, no una dirección fija.
+            </p>
+
+            <div className="mt-4">
+              <ListaDocumentos documentos={listaDocs} gestionable />
+            </div>
+
+            <details className="group mt-5 border-t border-ink/10 pt-5">
+              <summary className="cursor-pointer list-none text-sm font-medium text-ink/75 transition-colors hover:text-ink">
+                <span className="group-open:hidden">+ Subir un documento</span>
+                <span className="hidden group-open:inline">
+                  − Cerrar el formulario
+                </span>
+              </summary>
+              <SubirDocumento casoId={c.id} />
             </details>
           </Card>
 

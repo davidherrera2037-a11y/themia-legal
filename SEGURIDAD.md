@@ -46,6 +46,8 @@ frena son las políticas RLS.
 | `cases` | Ve, crea y edita | Solo los casos ligados a su ficha | Nada |
 | `case_events` | Ve y escribe todo | Solo lo marcado como visible, y solo de sus casos | Nada |
 | `leads` | Ve y gestiona | — | **Solo puede insertar** |
+| `deadlines` | Ve y gestiona | Solo los marcados visibles, de sus casos | Nada |
+| `case_documents` | Ve y gestiona | Solo los marcados visibles, de sus casos | Nada |
 | `profile_audit` | Solo lectura, solo SUPER_ADMIN | — | Nada |
 
 Ninguna tabla tiene política de borrado. En RLS, lo que no se permite se
@@ -82,6 +84,18 @@ clienta únicamente si alguien marcó a mano la casilla de compartir. Ese
 recorte lo hace la política `case_events_select_own`, no el código de la
 pantalla: aunque un error de programación mostrara la lista completa, la base
 no habría enviado lo privado.
+
+### Los documentos
+
+El bucket `expedientes` es **privado**: no hay dirección que se pueda
+adivinar ni reenviar. Cada descarga pide un enlace firmado que caduca en
+un minuto, y Storage solo lo firma si la política deja pasar a quien lo
+pide. Para una clienta, esa política consulta `case_documents`: el archivo
+tiene que estar marcado como visible **y** colgar de un caso suyo.
+
+Comprobado contra la base: con dos documentos en el mismo caso, uno
+interno y uno compartido, la clienta ve y puede firmar solo el segundo, y
+una cuenta ajena al caso no ve ninguno.
 
 ### El formulario público
 
@@ -182,9 +196,12 @@ despacho saben mejor que nadie.
 Se sabe que falta. Ninguno bloquea el uso normal, pero conviene tenerlos a la
 vista:
 
-- **No hay gestión de documentos.** Los expedientes se guardan hoy fuera del
-  sistema. Hacerlo bien exige Supabase Storage con políticas por caso, y es
-  la siguiente fase natural.
+- **No hay antivirus en la subida.** Un archivo subido se guarda tal cual.
+  Para un despacho pequeño donde solo sube el equipo el riesgo es bajo,
+  pero conviene saberlo antes de abrir la subida a las clientas.
+- **No se pueden borrar documentos** desde la aplicación, solo dejar de
+  compartirlos. Es deliberado —un expediente no debería perder piezas— y
+  significa que una petición de supresión se atiende a mano en Supabase.
 - **No hay límite de envíos en el formulario público.** Un robot decidido
   puede llenar la tabla `leads` de basura. No expone nada (no puede leer),
   pero da trabajo de limpieza. La solución es un límite por IP en el borde.
