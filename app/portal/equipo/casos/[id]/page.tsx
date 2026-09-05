@@ -5,6 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardTitle, Vacio } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LineaTiempo, type Evento } from "@/components/portal/LineaTiempo";
+import { FilaPlazo, diasQueFaltan, type Plazo } from "@/components/portal/Plazo";
+import { NuevoPlazo } from "./NuevoPlazo";
+import { CerrarPlazo } from "./CerrarPlazo";
+import { aISO, hoyEnColombia } from "@/lib/legal/festivos";
 import { CambiarEstado } from "./CambiarEstado";
 import { NuevaActuacion } from "./NuevaActuacion";
 import { AsignarAbogada } from "./AsignarAbogada";
@@ -78,7 +82,7 @@ export default async function DetalleCasoPage({
   if (!caso) notFound();
   const c = caso as unknown as Caso;
 
-  const [{ data: eventos }, { data: abogadas }] = await Promise.all([
+  const [{ data: eventos }, { data: abogadas }, { data: plazos }] = await Promise.all([
     supabase
       .from("case_events")
       .select("id, kind, title, detail, occurred_at, author_name, visible_para_cliente")
@@ -90,6 +94,16 @@ export default async function DetalleCasoPage({
       .in("role", ["ABOGADA", "SUPER_ADMIN"])
       .eq("status", "ACTIVE")
       .order("full_name", { ascending: true }),
+    supabase
+      .from("deadlines")
+      .select(
+        "id, case_id, title, kind, due_date, base_date, business_days, status, notes, visible_para_cliente",
+      )
+      .eq("case_id", id)
+      // Lo pendiente primero y lo que antes vence arriba: es el orden en
+      // que hay que mirarlo, no el orden en que se apuntó.
+      .order("status", { ascending: true })
+      .order("due_date", { ascending: true }),
   ]);
 
   // responsible_lawyer_id apunta a auth.users, no a profiles, así que
@@ -98,6 +112,12 @@ export default async function DetalleCasoPage({
   const responsable = (abogadas ?? []).find(
     (a) => a.id === c.responsible_lawyer_id,
   );
+
+  const listaPlazos = (plazos ?? []) as Plazo[];
+  const pendientes = listaPlazos.filter((pl) => pl.status === "PENDIENTE");
+  // El más urgente de los pendientes, para avisarlo arriba del todo.
+  const masUrgente = pendientes[0];
+  const diasUrgente = masUrgente ? diasQueFaltan(masUrgente.due_date) : null;
 
   return (
     <div className="space-y-6">
@@ -139,6 +159,27 @@ export default async function DetalleCasoPage({
         </div>
       </div>
 
+      {masUrgente && diasUrgente !== null && diasUrgente <= 2 && (
+        <p
+          role="alert"
+          className={`rounded-2xl border px-5 py-4 text-sm ${
+            diasUrgente < 0
+              ? "border-red-800/30 bg-red-50 text-red-900"
+              : "border-amber-800/30 bg-amber-50 text-amber-900"
+          }`}
+        >
+          <strong className="font-semibold">
+            {diasUrgente < 0
+              ? "Plazo vencido"
+              : diasUrgente === 0
+                ? "Vence hoy"
+                : "Vence en menos de dos días hábiles"}
+            :
+          </strong>{" "}
+          {masUrgente.title}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-6">
           <Card>
@@ -148,6 +189,56 @@ export default async function DetalleCasoPage({
               compartir con la clienta.
             </p>
             <NuevaActuacion casoId={c.id} />
+          </Card>
+
+          <Card>
+            <CardTitle
+              hint={
+                pendientes.length > 0
+                  ? `${pendientes.length} pendiente${pendientes.length === 1 ? "" : "s"}`
+                  : undefined
+              }
+            >
+              Plazos y vencimientos
+            </CardTitle>
+            <p className="mt-1 text-xs text-ink/55">
+              Los términos se cuentan en días hábiles descontando los
+              festivos de Colombia.
+            </p>
+
+            <div className="mt-4">
+              {listaPlazos.length === 0 ? (
+                <Vacio>
+                  Sin plazos apuntados. Un caso sin términos controlados es
+                  un caso a la espera de un problema.
+                </Vacio>
+              ) : (
+                <ul className="divide-y divide-ink/10">
+                  {listaPlazos.map((pl) => (
+                    <FilaPlazo
+                      key={pl.id}
+                      plazo={pl}
+                      accion={
+                        <CerrarPlazo
+                          id={pl.id}
+                          pendiente={pl.status === "PENDIENTE"}
+                        />
+                      }
+                    />
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <details className="group mt-5 border-t border-ink/10 pt-5">
+              <summary className="cursor-pointer list-none text-sm font-medium text-ink/75 transition-colors hover:text-ink">
+                <span className="group-open:hidden">+ Registrar un plazo</span>
+                <span className="hidden group-open:inline">
+                  − Cerrar el formulario
+                </span>
+              </summary>
+              <NuevoPlazo casoId={c.id} hoy={aISO(hoyEnColombia())} />
+            </details>
           </Card>
 
           <Card>

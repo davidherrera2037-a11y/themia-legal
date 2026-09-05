@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 const EQUIPO: Enlace[] = [
   { href: "/portal/equipo", label: "Tablero" },
+  { href: "/portal/equipo/plazos", label: "Vencimientos" },
   { href: "/portal/equipo/solicitudes", label: "Solicitudes" },
   { href: "/portal/equipo/casos", label: "Casos" },
   { href: "/portal/equipo/clientes", label: "Clientas" },

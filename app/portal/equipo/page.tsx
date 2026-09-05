@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { AlertTriangle, Briefcase, Inbox, Users } from "lucide-react";
+import { AlertTriangle, Briefcase, CalendarClock, Inbox } from "lucide-react";
 import { requireEquipo } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardTitle, Vacio } from "@/components/ui/Card";
+import { FilaPlazo, diasQueFaltan, type Plazo } from "@/components/portal/Plazo";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import {
@@ -69,23 +70,31 @@ export default async function TableroPage() {
 
   // Todo lo del tablero sale de tres consultas. RLS ya recortó las filas
   // que esta persona no puede ver, así que contar aquí es contar lo suyo.
-  const [{ data: casos }, { count: clientas }, { count: solicitudes }] =
+  const [{ data: casos }, { count: solicitudes }, { data: plazos }] =
     await Promise.all([
       supabase
         .from("cases")
         .select("id, title, area, status, priority, updated_at, clients(full_name)")
         .order("updated_at", { ascending: false }),
       supabase
-        .from("clients")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "ACTIVE"),
-      supabase
         .from("leads")
         .select("id", { count: "exact", head: true })
         .eq("status", "NUEVA"),
+      supabase
+        .from("deadlines")
+        .select(
+          "id, case_id, title, kind, due_date, base_date, business_days, status, notes, visible_para_cliente, cases(title, clients(full_name))",
+        )
+        .eq("status", "PENDIENTE")
+        .order("due_date", { ascending: true }),
     ]);
 
   const lista = (casos ?? []) as unknown as FilaCaso[];
+
+  // Los vencimientos mandan sobre todo lo demás: un término que se pasa no
+  // se recupera, y un caso sin mover, sí.
+  const listaPlazos = (plazos ?? []) as unknown as Plazo[];
+  const apremian = listaPlazos.filter((p) => diasQueFaltan(p.due_date) <= 2);
   const abiertos = lista.filter((c) => estaAbierto(c.status));
   const urgentes = abiertos.filter(
     (c) => c.priority === "URGENTE" || c.priority === "ALTA",
@@ -137,12 +146,27 @@ export default async function TableroPage() {
           destacado
         />
         <Indicador
-          icono={Users}
-          valor={clientas ?? 0}
-          label="Clientas activas"
-          href="/portal/equipo/clientes"
+          icono={CalendarClock}
+          valor={apremian.length}
+          label="Vencen en 2 días hábiles o menos"
+          href="/portal/equipo/plazos"
+          destacado
         />
       </div>
+
+      {apremian.length > 0 && (
+        <Card className="border-gold/50 bg-gold-pale/30 p-4 sm:p-6">
+          <CardTitle hint={`${apremian.length}`}>Lo que apremia</CardTitle>
+          <p className="mt-1 text-xs text-ink/60">
+            Contado en días hábiles, descontando los festivos de Colombia.
+          </p>
+          <ul className="mt-2 divide-y divide-ink/10">
+            {apremian.slice(0, 6).map((pl) => (
+              <FilaPlazo key={pl.id} plazo={pl} conCaso />
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
         <Card>

@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
       - name: Typecheck
         run: npm run typecheck
+      - name: Pruebas del calendario judicial
+        run: npm test
       - name: Build
         run: npm run build
       # Falla solo ante lo grave. Una alerta moderada no debe bloquear un
