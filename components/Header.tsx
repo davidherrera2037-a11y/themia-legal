@@ -49,16 +49,16 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-colors ${
+      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
         scrolled
-          ? "border-ink/10 bg-cream/95 shadow-sm backdrop-blur"
-          : "border-transparent bg-cream/80 backdrop-blur"
+          ? "border-ink/10 bg-cream/92 shadow-[0_1px_20px_-12px_rgba(34,26,22,0.4)] backdrop-blur-md"
+          : "border-transparent bg-cream/70 backdrop-blur"
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 sm:px-10">
         <a href="#inicio" className="flex items-center gap-2.5">
           <LogoMark className="h-9 w-auto text-gold" />
-          <span className="font-display text-lg font-semibold tracking-wide text-ink">
+          <span className="font-display text-lg font-semibold tracking-[0.08em] text-ink">
             THEMIA LEGAL
           </span>
         </a>
@@ -67,9 +67,10 @@ export function Header() {
         <nav className="hidden items-center gap-7 lg:flex">
           <a
             href="#inicio"
-            className="text-sm font-medium text-ink/85 transition-colors hover:text-ink"
+            className="group relative text-sm font-medium text-ink/85 transition-colors hover:text-ink"
           >
             Inicio
+            <span className="absolute -bottom-1 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
           </a>
 
           <div className="relative">
@@ -100,14 +101,14 @@ export function Header() {
                 />
                 <div
                   id="areas-dropdown"
-                  className="absolute left-1/2 top-full z-50 mt-3 w-80 -translate-x-1/2 rounded-2xl border border-ink/10 bg-cream p-2 shadow-xl"
+                  className="absolute left-1/2 top-full z-50 mt-3 w-80 -translate-x-1/2 rounded-2xl border border-gold/25 bg-cream p-2 shadow-[var(--shadow-alzada)]"
                 >
                   {PRACTICE_LINKS.map((item) => (
                     <a
                       key={item.href}
                       href={item.href}
                       onClick={() => setAreasOpen(false)}
-                      className="block rounded-lg px-4 py-2.5 text-sm text-ink/85 transition-colors hover:bg-ink/5 hover:text-ink"
+                      className="block rounded-xl px-4 py-2.5 text-sm text-ink/85 transition-colors hover:bg-gold-pale/60 hover:text-ink"
                     >
                       {item.label}
                     </a>
@@ -119,9 +120,10 @@ export function Header() {
 
           <a
             href="#por-que-elegirnos"
-            className="text-sm font-medium text-ink/85 transition-colors hover:text-ink"
+            className="group relative text-sm font-medium text-ink/85 transition-colors hover:text-ink"
           >
             ¿Por qué elegirnos?
+            <span className="absolute -bottom-1 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
           </a>
 
           <a
@@ -134,7 +136,7 @@ export function Header() {
 
           <a
             href="#agenda"
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-deep"
+            className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream shadow-[var(--shadow-suave)] transition-all hover:bg-ink-deep hover:shadow-[var(--shadow-alzada)]"
           >
             Agenda tu consulta
           </a>
@@ -186,9 +188,7 @@ export function Header() {
             </a>
 
             <div className="w-full max-w-xs border-t border-ink/10 pt-6 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/50">
-                Áreas de práctica
-              </p>
+              <p className="rotulo text-ink/50">Áreas de práctica</p>
               <div className="mt-4 flex flex-col items-center gap-4">
                 {PRACTICE_LINKS.map((item) => (
                   <a

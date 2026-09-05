@@ -47,8 +47,7 @@ export function RequestForm() {
 
   if (estado.ok) {
     return (
-      <section id="solicitud" className="reveal bg-cream px-6 py-4 sm:px-10">
-        <div className="mx-auto max-w-2xl rounded-3xl border border-gold/40 bg-gold-pale/40 p-8 text-center sm:p-10">
+      <div className="reveal flex h-full flex-col items-center justify-center rounded-3xl border border-gold/45 bg-gold-pale/45 p-8 text-center sm:p-10">
           <CheckCircle2
             className="mx-auto h-10 w-10 text-gold"
             strokeWidth={1.5}
@@ -72,19 +71,19 @@ export function RequestForm() {
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             Continuar por WhatsApp
           </a>
-        </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section id="solicitud" className="reveal bg-cream px-6 py-4 sm:px-10">
-      <div className="mx-auto max-w-2xl rounded-3xl border border-ink/10 bg-cream-soft p-8 sm:p-10">
-        <h2 className="text-center font-display text-2xl font-semibold text-ink sm:text-3xl">
+    <div className="reveal flex h-full flex-col rounded-3xl border border-ink/10 bg-cream-soft p-8 sm:p-10">
+        <span className="rotulo text-gold-deep">Primer paso</span>
+        <h2 className="mt-3 font-display text-2xl leading-snug text-ink">
           Cuéntanos tu caso
         </h2>
-        <p className="mt-2 text-center text-sm text-ink/70">
-          Déjanos tus datos y te escribimos para agendar tu consulta.
+        <p className="mt-2 text-sm leading-relaxed text-ink/65">
+          Déjanos tus datos y te escribimos para agendar la consulta. Queda
+          registrado de nuestro lado, así que no se pierde.
         </p>
 
         <form action={accion} className="mt-8 space-y-5">
@@ -158,7 +157,6 @@ export function RequestForm() {
         <span className="sr-only" aria-live="polite">
           {pendiente ? "Enviando tu solicitud..." : ""}
         </span>
-      </div>
-    </section>
+    </div>
   );
 }

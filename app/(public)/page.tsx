@@ -7,6 +7,7 @@ import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { ScheduleConsult } from "@/components/ScheduleConsult";
 import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SITIO } from "@/lib/sitio";
 import { AREAS } from "@/lib/db/tipos";
 
@@ -37,7 +38,7 @@ const FICHA_NEGOCIO = {
 
 export default function LandingPage() {
   return (
-    <main className="bg-cream">
+    <main>
       <script
         type="application/ld+json"
         // El contenido es un objeto propio, no texto de nadie de fuera.
@@ -48,12 +49,28 @@ export default function LandingPage() {
       <Hero />
       <IntroSection />
       <PracticeAreas />
-      <RequestForm />
+      <WhyChooseUs />
 
-      <section className="px-6 pb-8 sm:px-10">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2">
-          <WhyChooseUs />
-          <ScheduleConsult />
+      <section id="solicitud" className="px-6 py-20 sm:px-10 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="reveal">
+            <SectionHeading
+              centrado
+              numero="03"
+              rotulo="Hablemos"
+              titulo="El primer paso es una conversación"
+              entradilla="Cuéntanos por encima qué te pasa. Sin compromiso y sin
+                lenguaje de abogados: te decimos con franqueza si podemos
+                ayudarte y cómo."
+            />
+          </div>
+
+          {/* Las dos vías —dejar los datos o escribir directamente— van a
+              la misma altura a propósito: ninguna es la secundaria. */}
+          <div className="mt-14 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2">
+            <RequestForm />
+            <ScheduleConsult />
+          </div>
         </div>
       </section>
 

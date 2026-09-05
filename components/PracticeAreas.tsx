@@ -8,10 +8,11 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { PracticeAreaCard, type PracticeArea } from "./PracticeAreaCard";
+import { SectionHeading } from "./ui/SectionHeading";
 
 const topRow: PracticeArea[] = [
   {
-    title: "DERECHO DE FAMILIA",
+    title: "Derecho de familia",
     slug: "familia",
     icon: Users,
     items: [
@@ -23,7 +24,7 @@ const topRow: PracticeArea[] = [
     ],
   },
   {
-    title: "DERECHO CIVIL",
+    title: "Derecho civil",
     slug: "civil",
     icon: FileText,
     items: [
@@ -35,7 +36,7 @@ const topRow: PracticeArea[] = [
     ],
   },
   {
-    title: "DERECHO LABORAL",
+    title: "Derecho laboral",
     slug: "laboral",
     icon: Briefcase,
     items: [
@@ -47,7 +48,7 @@ const topRow: PracticeArea[] = [
     ],
   },
   {
-    title: "DERECHO COMERCIAL Y EMPRESARIAL",
+    title: "Derecho comercial y empresarial",
     slug: "comercial-empresarial",
     icon: TrendingUp,
     items: [
@@ -61,7 +62,7 @@ const topRow: PracticeArea[] = [
 
 const bottomRow: PracticeArea[] = [
   {
-    title: "DERECHO CONSTITUCIONAL",
+    title: "Derecho constitucional",
     slug: "constitucional",
     icon: Scale,
     items: [
@@ -73,7 +74,7 @@ const bottomRow: PracticeArea[] = [
     ],
   },
   {
-    title: "DERECHO PENAL",
+    title: "Derecho penal",
     slug: "penal",
     icon: Gavel,
     items: [
@@ -84,7 +85,7 @@ const bottomRow: PracticeArea[] = [
     ],
   },
   {
-    title: "SERVICIOS JURÍDICOS",
+    title: "Servicios jurídicos",
     slug: "servicios-juridicos",
     icon: ClipboardList,
     items: [
@@ -100,20 +101,35 @@ const bottomRow: PracticeArea[] = [
 ];
 
 export function PracticeAreas() {
+  // Las dos filas del diseño original se unen en un solo catálogo: con
+  // tarjetas, la retícula ya separa visualmente y el corte a mitad solo
+  // obligaba a decidir arbitrariamente qué área iba "arriba".
+  const areas = [...topRow, ...bottomRow];
+
   return (
-    <section className="bg-cream px-6 py-16 sm:px-10 sm:py-20" id="areas">
+    <section id="areas" className="px-6 py-20 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {topRow.map((area) => (
-            <PracticeAreaCard key={area.title} {...area} />
-          ))}
+        <div className="reveal">
+          <SectionHeading
+            numero="01"
+            rotulo="Áreas de práctica"
+            titulo="En qué podemos acompañarte"
+            entradilla="Cada asunto se estudia en particular. Si el tuyo no encaja
+              exactamente en ninguna de estas casillas, escríbenos igual y te
+              decimos con franqueza si podemos ayudarte."
+          />
         </div>
 
-        <div className="my-12 h-px w-full bg-ink/15" aria-hidden="true" />
-
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {bottomRow.map((area) => (
-            <PracticeAreaCard key={area.title} {...area} />
+        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {areas.map((area, i) => (
+            <PracticeAreaCard
+              key={area.slug}
+              {...area}
+              numero={String(i + 1).padStart(2, "0")}
+              // Escalonado por columna, no por posición absoluta: así la
+              // fila entra como una onda y no como una escalera larga.
+              retraso={(i % 3) * 90}
+            />
           ))}
         </div>
       </div>

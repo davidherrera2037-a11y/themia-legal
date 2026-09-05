@@ -76,10 +76,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${playfair.variable} ${lora.variable} antialiased`}>
-        {children}
-      </body>
+    // Las variables de las fuentes van en <html>, no en <body>.
+    //
+    // `@theme` de Tailwind define --font-display en :root, que es <html>.
+    // Con las clases en <body>, --font-playfair no existía todavía a esa
+    // altura, así que --font-display se resolvía a vacío y toda la página
+    // caía a la tipografía de sistema: el sitio llevaba tiempo sin mostrar
+    // ni Playfair ni Lora.
+    <html
+      lang="es"
+      className={`${playfair.variable} ${lora.variable}`}
+    >
+      <head>
+        {/*
+          Red de seguridad: las secciones aparecen al desplazarse, y ese
+          efecto arranca con las piezas invisibles. Si el navegador no
+          ejecuta JavaScript, sin esto la página se quedaría en blanco.
+        */}
+        <noscript>
+          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

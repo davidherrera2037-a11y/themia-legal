@@ -1,17 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  /* Color tokens — from the Themia Legal brand brief */
+  /* ---------------------------------------------------------------
+     Color — la paleta de marca de Themia Legal.
+     Los tres primeros son los del brief; los añadidos son variantes
+     que hacían falta para tener contraste suficiente sin salirse.
+     --------------------------------------------------------------- */
   --color-cream: #fdf8f0;
   --color-cream-soft: #f6ede0;
+  /* Un tono más de papel, para alternar secciones sin cambiar de mundo. */
+  --color-cream-deep: #efe3d2;
   --color-ink: #3e271c;
   --color-ink-deep: #221a16;
   --color-gold: #b8894f;
+  /* El oro de marca sobre crema no llega a 4.5:1 en texto pequeño.
+     Esta versión sí, y a simple vista es el mismo oro. */
+  --color-gold-deep: #8f6534;
   --color-gold-pale: #efe1cc;
+  /* El vino del logotipo de la firma. No estaba en los tokens, pero es
+     el color sobre el que vive su símbolo, así que la página debería
+     poder usarlo en vez de aproximarlo. */
+  /* Muestreado del propio archivo del logotipo, no aproximado: así el
+     marco y la imagen no hacen costura donde se encuentran. */
+  --color-vino: #581a25;
+  --color-vino-deep: #3a1018;
 
-  /* Type tokens */
+  /* Tipografía */
   --font-display: var(--font-playfair), Georgia, serif;
   --font-body: var(--font-lora), Georgia, serif;
+
+  /* Escala fluida: crece con la pantalla sin saltos ni media queries. */
+  --text-hero: clamp(2.5rem, 1.6rem + 4vw, 4.5rem);
+  --text-titulo: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --text-lead: clamp(1.05rem, 0.95rem + 0.5vw, 1.3rem);
+
+  /* Sombras cálidas: una sombra gris sobre papel crema se ve sucia. */
+  --shadow-suave: 0 1px 2px rgba(34, 26, 22, 0.04),
+    0 8px 24px -12px rgba(34, 26, 22, 0.15);
+  --shadow-alzada: 0 2px 4px rgba(34, 26, 22, 0.05),
+    0 18px 40px -18px rgba(34, 26, 22, 0.25);
 }
 
 @layer base {
@@ -28,9 +55,30 @@
     background-color: var(--color-cream);
     color: var(--color-ink);
     font-family: var(--font-body);
+    /* Grano muy tenue: le quita al crema el aspecto de plano digital y
+       lo acerca al papel. Son dos degradados, no una imagen: no cuesta
+       ninguna descarga y no lo bloquea la política de contenido. */
+    background-image:
+      radial-gradient(
+        circle at 15% 0%,
+        rgba(184, 137, 79, 0.055),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 85% 12%,
+        rgba(184, 137, 79, 0.04),
+        transparent 40%
+      );
+    /* Sin `background-attachment: fixed`: además de provocar saltos al
+       desplazarse en Safari móvil, hace que el compositor pinte mal los
+       bloques largos. El lavado de oro se ve igual sin él. */
   }
 
-  /* Respect reduced-motion preferences */
+  /* Los números de sección y las cifras se leen mejor alineados. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -45,10 +93,12 @@
     }
   }
 
-  /* Visible keyboard focus everywhere */
   a:focus-visible,
-  button:focus-visible {
-    outline: 2px solid var(--color-gold);
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-gold-deep);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -58,13 +108,38 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Medida de lectura cómoda: unos 65 caracteres. */
+  .medida {
+    max-width: 34em;
+  }
+
+  /* Versalitas espaciadas para los rótulos de sección. */
+  .rotulo {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  /* El arco: la forma de un pórtico de juzgado. Se usa en el retrato del
+     encabezado y en los medallones de las áreas de práctica. */
+  .arco {
+    border-radius: 9999px 9999px 1.5rem 1.5rem;
+  }
 }
 
-/* Scroll-reveal: elements fade/rise into place as the page is explored */
+/* ------------------------------------------------------------------
+   Aparición al desplazarse.
+   `--retraso` permite escalonar los elementos de una misma fila para
+   que entren uno detrás de otro en vez de todos de golpe.
+   ------------------------------------------------------------------ */
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(18px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0ms),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0ms);
 }
 .reveal.is-visible {
   opacity: 1;

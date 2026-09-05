@@ -28,7 +28,18 @@ export function ScrollReveal() {
     );
 
     targets.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+
+    // Si algo no llegó a marcarse —pestaña abierta en segundo plano, un
+    // navegador que no dispara el observador— se muestra igual. Vale más
+    // perder la animación que dejar media página en blanco.
+    const rescate = window.setTimeout(() => {
+      targets.forEach((el) => el.classList.add("is-visible"));
+    }, 3000);
+
+    return () => {
+      window.clearTimeout(rescate);
+      observer.disconnect();
+    };
   }, []);
 
   return null;
