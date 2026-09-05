@@ -57,7 +57,7 @@ export function Header() {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 sm:px-10">
         <a href="#inicio" className="flex items-center gap-2.5">
-          <LogoMark className="h-9 w-auto text-gold" />
+          <LogoMark className="h-9 text-gold" />
           <span className="font-display text-lg font-semibold tracking-[0.08em] text-ink">
             THEMIA LEGAL
           </span>
@@ -163,7 +163,7 @@ export function Header() {
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5"
             >
-              <LogoMark className="h-9 w-auto text-gold" />
+              <LogoMark className="h-9 text-gold" />
               <span className="font-display text-lg font-semibold tracking-wide text-ink">
                 THEMIA LEGAL
               </span>

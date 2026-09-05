@@ -1,43 +1,49 @@
 type LogoProps = {
   className?: string;
+  /**
+   * Texto para lectores de pantalla. Sin él la marca se trata como
+   * decorativa, que es lo correcto cuando al lado ya se lee "THEMIA
+   * LEGAL": repetirlo obligaría a oír el nombre dos veces seguidas.
+   */
+  label?: string;
 };
 
 /**
- * Placeholder wordmark: a simple line-art "Justice figure as the letter T".
+ * El símbolo de la firma: la figura de la justicia sobre la T.
  *
- * This stands in for the real Themia Legal logo until the actual file is
- * added. To use the real logo instead, drop the file at
- * public/images/logo.png and swap the <LogoMark /> usage in Hero.tsx for
- * a plain <img src="/images/logo.png" ... /> — no other changes needed.
+ * Antes era un dibujo de relleno hecho a mano ("placeholder", lo decía el
+ * propio archivo) que a tamaño grande parecía un monigote. Ahora es el
+ * logotipo de verdad, extraído del lockup original.
+ *
+ * Va como máscara CSS y no como <img> por una razón: la página lo necesita
+ * en oro sobre el papel, en crema sobre el fondo oscuro y casi
+ * transparente como marca de agua. Con una máscara, el color lo pone
+ * `currentColor` y basta una clase de texto para cambiarlo; con una imagen
+ * harían falta tres archivos distintos.
  */
-export function LogoMark({ className }: LogoProps) {
+export function LogoMark({ className, label }: LogoProps) {
+  const mascara = {
+    WebkitMaskImage: "url('/images/logotipo.png')",
+    maskImage: "url('/images/logotipo.png')",
+    WebkitMaskRepeat: "no-repeat",
+    maskRepeat: "no-repeat",
+    WebkitMaskPosition: "center",
+    maskPosition: "center",
+    WebkitMaskSize: "contain",
+    maskSize: "contain",
+    // Proporción del archivo: con la altura puesta por una clase, el ancho
+    // sale solo y no hace falta declararlo en cada sitio.
+    aspectRatio: "374 / 295",
+    backgroundColor: "currentColor",
+  } as const;
+
   return (
-    <svg
-      viewBox="0 0 100 130"
-      className={className}
-      role="img"
-      aria-label="Themia Legal"
-    >
-      <title>Themia Legal</title>
-      {/* scale beam + strings + pans (forms the crossbar of the T) */}
-      <line x1="8" y1="40" x2="92" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="50" y1="26" x2="50" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="8" y1="40" x2="8" y2="54" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="92" y1="40" x2="92" y2="54" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M 1 54 Q 8 66 15 54" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M 85 54 Q 92 66 99 54" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      {/* head + blindfold */}
-      <circle cx="50" cy="18" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      <line x1="42" y1="17.5" x2="58" y2="17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      {/* robe (forms the stem of the T) */}
-      <path
-        d="M 38 30 L 62 30 L 70 118 L 30 118 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <line x1="50" y1="30" x2="50" y2="118" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-    </svg>
+    <span
+      className={`inline-block shrink-0 ${className ?? ""}`}
+      style={mascara}
+      role={label ? "img" : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+    />
   );
 }

@@ -1,12 +1,27 @@
-Pon aquí tus imágenes reales, con EXACTAMENTE estos nombres:
+IMÁGENES DEL SITIO
+==================
 
-1. logo.png   → el logotipo de Themia Legal
-2. hero.jpg   → la foto de la estatua de la Justicia con los libros
+hero.jpg
+  El lockup completo del logotipo (símbolo + "THEMIA LEGAL / FIRMA DE
+  ABOGADAS") sobre burdeos, 1050x600. Se usa como miniatura al compartir
+  el enlace en WhatsApp, LinkedIn o Instagram. No se muestra en la página.
 
-El sitio ya está listo para usarlas en cuanto aparezcan aquí con esos
-nombres — no hay que tocar ni una línea de código.
+logotipo.png
+  Solo el símbolo (la figura de la justicia sobre la T), recortado de
+  hero.jpg y sin fondo. Está en blanco a propósito: la página lo usa como
+  máscara y le pone el color que toca en cada sitio (oro sobre el papel,
+  crema sobre el fondo oscuro, casi transparente como marca de agua). Si
+  algún día cambia el logotipo, basta con reemplazar este archivo por otro
+  PNG con transparencia y la misma idea: la forma en blanco, el resto
+  transparente.
 
-Mientras tanto, el sitio se ve bien igual: usa un logo dibujado y un
-fondo de color en su lugar.
+portada.jpg   (OPCIONAL — todavía no está)
+  La fotografía del arco del encabezado: la figura de la justicia con los
+  libros del despacho. En cuanto se deje aquí un archivo con ese nombre,
+  el encabezado la usa automáticamente y deja de mostrar el símbolo sobre
+  el burdeos. No hay que tocar código.
 
-Puedes borrar este archivo (LEEME.txt) cuando ya no lo necesites.
+  Formato recomendado: vertical o cuadrada, mínimo 900x1125 px (el arco es
+  4:5). El texto de la imagen conviene que quede en la mitad superior: la
+  parte de abajo lleva un degradado oscuro con la frase del despacho
+  encima.

@@ -40,7 +40,7 @@ export function PortalNav({
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-3">
         <Link href="/portal" className="flex shrink-0 items-center gap-2.5">
-          <LogoMark className="h-8 w-auto text-gold" />
+          <LogoMark className="h-8 text-gold" />
           <span className="font-display text-base font-semibold tracking-wide text-ink">
             THEMIA
           </span>
